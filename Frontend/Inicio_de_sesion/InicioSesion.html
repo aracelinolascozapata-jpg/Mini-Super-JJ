@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Inicio de Sesión</title>
+
+<style>
+
+body{
+font-family:Arial;
+background:#f4f4f4;
+margin:0;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+}
+
+.login{
+background:white;
+padding:30px;
+border-radius:8px;
+box-shadow:0 0 10px rgba(0,0,0,0.2);
+text-align:center;
+width:300px;
+}
+
+input{
+width:90%;
+padding:10px;
+margin:10px 0;
+}
+
+button{
+padding:10px 15px;
+cursor:pointer;
+}
+
+.mensaje{
+color:red;
+font-weight:bold;
+}
+
+.menu{
+display:none;
+margin-top:20px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="login">
+
+<h2>Inicio de Sesión</h2>
+
+<input type="text" id="usuario" placeholder="Nombre de usuario">
+
+<input type="password" id="password" placeholder="Contraseña">
+
+<button onclick="iniciarSesion()">Iniciar Sesión</button>
+
+<p id="mensaje" class="mensaje"></p>
+
+<div id="menu" class="menu">
+<h3 id="rolUsuario"></h3>
+<p>Menú principal del sistema</p>
+</div>
+
+</div>
+
+<script>
+
+/* Usuarios registrados */
+
+let usuarios=[
+{usuario:"propietario",password:"1234",rol:"Propietario"},
+{usuario:"encargado",password:"abcd",rol:"Encargado"}
+];
+
+function iniciarSesion(){
+
+let usuario=document.getElementById("usuario").value;
+let password=document.getElementById("password").value;
+let mensaje=document.getElementById("mensaje");
+
+mensaje.innerText="";
+
+/* Verificar credenciales */
+
+let encontrado=usuarios.find(u=>u.usuario===usuario && u.password===password);
+
+/* 5.1 Credenciales inválidas */
+
+if(!encontrado){
+
+mensaje.innerText="Datos incorrectos";
+return;
+
+}
+
+/* Identificar rol */
+
+document.getElementById("rolUsuario").innerText=
+"Bienvenido "+encontrado.rol;
+
+/* Mostrar menú */
+
+document.getElementById("menu").style.display="block";
+
+mensaje.innerText="";
+
+}
+
+</script>
+
+</body>
+</html>
