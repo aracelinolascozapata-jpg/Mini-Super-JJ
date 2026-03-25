@@ -22,4 +22,6 @@ usuario podrá ingresar nuevos productos al inventario indicando datos como nomb
 precio de compra, precio de venta, proveedor y cantidad disponible.
 
 Tecnologías utilizadas:
+-Whatsapp: Para comunicarnos con la dueña de el negocio de 'Mini Super JJ'.
+-GitHub: Para repartir el trabajo del proyecto y organizarnos mejor.
 
