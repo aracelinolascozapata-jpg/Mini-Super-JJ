@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title> Registrar Entrada de Mercancía</title>
+
+<style>
+
+body{
+font-family:Arial;
+background:#f4f4f4;
+margin:0;
+}
+
+header{
+background:#2c3e50;
+color:white;
+padding:15px;
+text-align:center;
+}
+
+.container{
+padding:20px;
+}
+
+button{
+padding:8px 12px;
+margin:5px;
+cursor:pointer;
+}
+
+input, select{
+padding:8px;
+margin:5px;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+margin-top:15px;
+}
+
+table, th, td{
+border:1px solid #ccc;
+}
+
+th, td{
+padding:10px;
+text-align:center;
+}
+
+.hidden{
+display:none;
+}
+
+.comprobante{
+background:white;
+border:1px solid #ccc;
+padding:15px;
+margin-top:20px;
+}
+
+</style>
+</head>
+
+<body>
+
+<header>
+<h2>Registrar Entrada de Mercancía</h2>
+</header>
+
+<div class="container">
+
+<!-- MENU ENTRADAS -->
+
+<div id="menu">
+
+<h3>Entradas de Mercancía</h3>
+
+<button onclick="nuevaEntrada()">Nueva Entrada</button>
+
+</div>
+
+<!-- FORMULARIO ENTRADA -->
+
+<div id="entrada" class="hidden">
+
+<h3>Registrar Entrada de Mercancía</h3>
+
+<label>Proveedor</label>
+<select id="proveedor">
+<option value="">Seleccione proveedor</option>
+<option>Proveedor A</option>
+<option>Proveedor B</option>
+<option>Proveedor C</option>
+</select>
+
+<label>Número de Factura / Remisión</label>
+<input type="text" id="factura">
+
+<br>
+
+<label>Producto</label>
+<input type="text" id="producto">
+
+<label>Precio Compra</label>
+<input type="number" id="precio">
+
+<label>Cantidad</label>
+<input type="number" id="cantidad">
+
+<br>
+
+<button onclick="agregarProducto()">Agregar Producto</button>
+<button onclick="eliminarLinea()">Eliminar Línea</button>
+
+<table id="tabla">
+
+<tr>
+<th>Producto</th>
+<th>Cantidad</th>
+<th>Precio Compra</th>
+<th>Subtotal</th>
+</tr>
+
+</table>
+
+<h3>Total Entrada: $<span id="total">0</span></h3>
+
+<button onclick="finalizarEntrada()">Finalizar Entrada</button>
+<button onclick="cancelar()">Cancelar</button>
+
+</div>
+
+<!-- RESUMEN -->
+
+<div id="resumen" class="hidden">
+
+<h3>Resumen de Entrada</h3>
+
+<div id="detalle"></div>
+
+<h3>¿Registrar como pago realizado o pendiente?</h3>
+
+<button onclick="guardarEntrada('Pagado')">Pago Realizado</button>
+<button onclick="guardarEntrada('Pendiente')">Pago Pendiente</button>
+
+</div>
+
+<!-- COMPROBANTE -->
+
+<div id="comprobante" class="hidden comprobante"></div>
+
+</div>
+
+<script>
+
+let inventario={
+"Coca":10,
+"Papas":5,
+"Pan":8
+};
+
+let entrada=[];
+let total=0;
+
+function nuevaEntrada(){
+
+document.getElementById("menu").classList.add("hidden");
+document.getElementById("entrada").classList.remove("hidden");
+
+}
+
+function agregarProducto(){
+
+let producto=document.getElementById("producto").value;
+let precio=parseFloat(document.getElementById("precio").value);
+let cantidad=parseInt(document.getElementById("cantidad").value);
+
+if(!inventario.hasOwnProperty(producto)){
+alert("Producto no registrado. Registrar Producto Nuevo.");
+return;
+}
+
+let subtotal=precio*cantidad;
+
+entrada.push({producto,cantidad,precio,subtotal});
+
+let tabla=document.getElementById("tabla");
+
+let fila=tabla.insertRow();
+
+fila.insertCell(0).innerHTML=producto;
+fila.insertCell(1).innerHTML=cantidad;
+fila.insertCell(2).innerHTML="$"+precio;
+fila.insertCell(3).innerHTML="$"+subtotal;
+
+total+=subtotal;
+
+document.getElementById("total").innerText=total;
+
+}
+
+function eliminarLinea(){
+
+let tabla=document.getElementById("tabla");
+
+if(tabla.rows.length>1){
+
+let fila=tabla.rows.length-1;
+
+let subtotal=entrada[fila-1].subtotal;
+
+tabla.deleteRow(fila);
+
+entrada.pop();
+
+total-=subtotal;
+
+document.getElementById("total").innerText=total;
+
+}
+
+}
+
+function finalizarEntrada(){
+
+let proveedor=document.getElementById("proveedor").value;
+
+if(proveedor==""){
+alert("Debe seleccionar un proveedor");
+return;
+}
+
+if(entrada.length==0){
+alert("Debe agregar al menos un producto a la entrada.");
+return;
+}
+
+document.getElementById("entrada").classList.add("hidden");
+document.getElementById("resumen").classList.remove("hidden");
+
+let texto="Proveedor: "+proveedor+"<br><br>";
+
+entrada.forEach(p=>{
+texto+=p.producto+" "+p.cantidad+" x $"+p.precio+" = $"+p.subtotal+"<br>";
+});
+
+texto+="<br>Total: $"+total;
+
+document.getElementById("detalle").innerHTML=texto;
+
+}
+
+function guardarEntrada(estado){
+
+try{
+
+entrada.forEach(p=>{
+inventario[p.producto]+=p.cantidad;
+});
+
+let numero=Math.floor(Math.random()*100000);
+
+let texto="Comprobante Entrada #"+numero+"<br><br>";
+
+entrada.forEach(p=>{
+texto+=p.producto+" "+p.cantidad+" unidades<br>";
+});
+
+texto+="<br>Total compra: $"+total;
+texto+="<br>Estado pago: "+estado;
+
+document.getElementById("resumen").classList.add("hidden");
+
+let comp=document.getElementById("comprobante");
+
+comp.innerHTML=texto;
+
+comp.classList.remove("hidden");
+
+}catch{
+
+alert("No se pudo completar el registro. Los stocks no han sido modificados.");
+
+}
+
+}
+
+function cancelar(){
+
+let confirmar=confirm("¿Cancelar la entrada de mercancía?");
+
+if(confirmar){
+location.reload();
+}
+
+}
+
+</script>
+
+</body>
+</html>
