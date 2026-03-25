@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Alerta de Inventario Bajo</title>
+
+<style>
+
+body{
+font-family:Arial;
+background:#f4f4f4;
+margin:0;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+}
+
+.alerta{
+background:white;
+padding:30px;
+border-radius:8px;
+box-shadow:0 0 10px rgba(0,0,0,0.2);
+text-align:center;
+}
+
+h2{
+color:#c0392b;
+}
+
+.mensaje{
+color:red;
+font-weight:bold;
+font-size:18px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="alerta">
+
+<h2>Alerta de Inventario</h2>
+
+<p id="mensaje" class="mensaje"></p>
+
+</div>
+
+<script>
+
+/* Producto con stock bajo */
+
+let producto="Leche";
+let stockActual=2;
+let nivelMinimo=5;
+
+/* Verificar inventario */
+
+if(stockActual <= nivelMinimo){
+
+document.getElementById("mensaje").innerText=
+"Alerta: El producto '"+producto+"' tiene inventario bajo.";
+
+}else{
+
+document.getElementById("mensaje").innerText=
+"El inventario está en niveles normales.";
+
+}
+
+</script>
+
+</body>
+</html>
