@@ -2,7 +2,7 @@
 Proyecto de Software de "Mini Super JJ"
 
 Integrantes:
--Amabely Aideli Torres Fernandez
+-Amabely Aidely Torres Fernandez
 -Juan Daniel Sanchez Rivera
 -Ricardo Sifuentes Mendez
 -Araceli Nolasco Zapata
