@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Registrar y Gestionar Adeudo de Cliente</title>
+
+<style>
+
+body{
+font-family:Arial;
+background:#f4f4f4;
+margin:0;
+}
+
+header{
+background:#2980b9;
+color:white;
+padding:15px;
+text-align:center;
+}
+
+.container{
+padding:20px;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+background:white;
+}
+
+th,td{
+border:1px solid #ccc;
+padding:10px;
+text-align:center;
+}
+
+th{
+background:#eee;
+}
+
+button{
+padding:8px 12px;
+margin:5px;
+cursor:pointer;
+}
+
+.hidden{
+display:none;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<header>
+<h2>Registrar y Gestionar Adeudo de Cliente</h2>
+</header>
+
+<div class="container">
+
+<h3>Registrar Adeudo</h3>
+
+<label>Cliente</label>
+<select id="cliente">
+<option value="">Seleccionar cliente</option>
+<option>Juan Pérez</option>
+<option>Ana López</option>
+</select>
+
+<button onclick="registrarCliente()">Registrar Cliente Nuevo</button>
+
+<br><br>
+
+<label>Total de la venta</label>
+<input type="number" id="montoVenta">
+
+<br><br>
+
+<button onclick="registrarAdeudo()">Registrar Adeudo</button>
+
+<hr>
+
+<h3>Adeudos Pendientes</h3>
+
+<table>
+
+<thead>
+<tr>
+<th>Cliente</th>
+<th>Fecha</th>
+<th>Monto</th>
+<th>Estado</th>
+<th>Días de atraso</th>
+<th>Acción</th>
+</tr>
+</thead>
+
+<tbody id="tablaAdeudos"></tbody>
+
+</table>
+
+<div id="pagoPanel" class="hidden">
+
+<h3>Registrar Pago</h3>
+
+<p id="detalleAdeudo"></p>
+
+<label>Monto pagado</label>
+<input type="number" id="montoPago">
+
+<br><br>
+
+<button onclick="registrarPago()">Registrar Pago</button>
+
+</div>
+
+</div>
+
+<script>
+
+let adeudos=[];
+let adeudoSeleccionado=null;
+
+/* Registrar cliente rápido (A.3) */
+
+function registrarCliente(){
+
+let nombre=prompt("Nombre del cliente");
+
+if(nombre==null || nombre=="") return;
+
+let telefono=prompt("Teléfono (opcional)");
+
+let select=document.getElementById("cliente");
+
+let option=document.createElement("option");
+option.text=nombre;
+
+select.add(option);
+
+}
+
+
+/* Registrar adeudo */
+
+function registrarAdeudo(){
+
+let cliente=document.getElementById("cliente").value;
+let monto=parseFloat(document.getElementById("montoVenta").value);
+
+if(cliente==""){
+alert("Seleccione un cliente.");
+return;
+}
+
+let fecha=new Date();
+
+let adeudo={
+cliente:cliente,
+fecha:fecha.toLocaleDateString(),
+monto:monto,
+saldo:monto,
+estado:"Pendiente"
+};
+
+/* A.6 Error al guardar */
+
+try{
+
+adeudos.push(adeudo);
+
+alert("Adeudo registrado correctamente.");
+
+mostrarAdeudos();
+
+}catch{
+
+alert("No se pudo registrar el adeudo. La venta no se ha completado.");
+
+}
+
+}
+
+
+/* Mostrar adeudos */
+
+function mostrarAdeudos(){
+
+let tabla=document.getElementById("tablaAdeudos");
+
+tabla.innerHTML="";
+
+adeudos.forEach((a,i)=>{
+
+let fila="<tr>";
+fila+="<td>"+a.cliente+"</td>";
+fila+="<td>"+a.fecha+"</td>";
+fila+="<td>"+a.saldo+"</td>";
+fila+="<td>"+a.estado+"</td>";
+fila+="<td>0</td>";
+fila+="<td><button onclick='seleccionarAdeudo("+i+")'>Pagar</button></td>";
+fila+="</tr>";
+
+tabla.innerHTML+=fila;
+
+});
+
+}
+
+
+/* Seleccionar adeudo */
+
+function seleccionarAdeudo(i){
+
+adeudoSeleccionado=i;
+
+let a=adeudos[i];
+
+document.getElementById("detalleAdeudo").innerText=
+"Cliente: "+a.cliente+" | Saldo pendiente: $"+a.saldo;
+
+document.getElementById("pagoPanel").classList.remove("hidden");
+
+}
+
+
+/* Registrar pago */
+
+function registrarPago(){
+
+let pago=parseFloat(document.getElementById("montoPago").value);
+
+let adeudo=adeudos[adeudoSeleccionado];
+
+/* B.5 Pago mayor al adeudo */
+
+if(pago>adeudo.saldo){
+
+let opcion=confirm("El pago excede el adeudo. ¿Desea registrar el excedente como pago anticipado?");
+
+if(!opcion){
+return;
+}
+
+}
+
+adeudo.saldo-=pago;
+
+/* registrar ingreso en caja (simulado) */
+
+if(adeudo.saldo<=0){
+
+adeudo.estado="Pagado";
+adeudo.saldo=0;
+
+}
+
+mostrarAdeudos();
+
+document.getElementById("pagoPanel").classList.add("hidden");
+
+alert("Pago registrado.");
+
+}
+
+</script>
+
+</body>
+</html>
