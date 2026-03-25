@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Generar Reporte de Ventas y Rotación</title>
+
+<style>
+
+body{
+font-family:Arial;
+background:#f4f4f4;
+margin:0;
+}
+
+header{
+background:#27ae60;
+color:white;
+padding:15px;
+text-align:center;
+}
+
+.container{
+padding:20px;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+background:white;
+margin-top:20px;
+}
+
+th,td{
+border:1px solid #ccc;
+padding:10px;
+text-align:center;
+}
+
+th{
+background:#eee;
+}
+
+button{
+padding:8px 12px;
+margin:5px;
+cursor:pointer;
+}
+
+.hidden{
+display:none;
+}
+
+.mensaje{
+color:red;
+font-weight:bold;
+margin-top:10px;
+}
+
+</style>
+</head>
+
+<body>
+
+<header>
+<h2>Generar Reporte de Ventas y Rotación</h2>
+</header>
+
+<div class="container">
+
+<h3>Tipo de Reporte</h3>
+
+<select id="tipoReporte">
+<option>Ventas por Período</option>
+<option>Top Productos</option>
+<option>Rotación de Inventario</option>
+<option>Comparativa de Ingresos</option>
+</select>
+
+<hr>
+
+<h3>Filtros</h3>
+
+<label>Desde</label>
+<input type="date" id="fechaDesde">
+
+<label>Hasta</label>
+<input type="date" id="fechaHasta">
+
+<label>Categoría</label>
+<input type="text" id="categoria">
+
+<label>Método de Pago</label>
+<input type="text" id="metodoPago">
+
+<br><br>
+
+<button onclick="generarReporte()">Generar Reporte</button>
+
+<p id="mensaje" class="mensaje hidden"></p>
+
+<div id="resultado" class="hidden">
+
+<h3>Resultados</h3>
+
+<p id="metricas"></p>
+
+<table>
+
+<thead>
+<tr>
+<th>Producto</th>
+<th>Cantidad Vendida</th>
+<th>Total</th>
+</tr>
+</thead>
+
+<tbody id="tablaResultados"></tbody>
+
+</table>
+
+<br>
+
+<button onclick="exportarPDF()">Exportar a PDF</button>
+<button onclick="exportarExcel()">Exportar a Excel</button>
+<button onclick="window.print()">Imprimir</button>
+<button onclick="enviarCorreo()">Enviar por Correo</button>
+
+</div>
+
+</div>
+
+<script>
+
+/* No hay ventas registradas para activar la excepción 6.1 */
+
+let ventas=[];
+
+function generarReporte(){
+
+let desde=document.getElementById("fechaDesde").value;
+let hasta=document.getElementById("fechaHasta").value;
+
+let mensaje=document.getElementById("mensaje");
+
+mensaje.classList.add("hidden");
+
+/* 5.1 Filtros inválidos */
+
+if(desde!="" && hasta!="" && desde>hasta){
+
+mensaje.innerText="Rango de fechas inválido";
+mensaje.classList.remove("hidden");
+
+return;
+
+}
+
+/* 6.1 Sin datos para los filtros */
+
+if(ventas.length==0){
+
+mensaje.innerText="No hay datos que coincidan con los criterios de búsqueda.";
+mensaje.classList.remove("hidden");
+
+return;
+
+}
+
+mostrarResultados();
+
+}
+
+function mostrarResultados(){
+
+let tabla=document.getElementById("tablaResultados");
+tabla.innerHTML="";
+
+let totalVentas=0;
+let topProducto="";
+
+let max=0;
+
+ventas.forEach(v=>{
+
+let fila="<tr>";
+fila+="<td>"+v.producto+"</td>";
+fila+="<td>"+v.cantidad+"</td>";
+fila+="<td>$"+v.total+"</td>";
+fila+="</tr>";
+
+tabla.innerHTML+=fila;
+
+totalVentas+=v.total;
+
+if(v.cantidad>max){
+max=v.cantidad;
+topProducto=v.producto;
+}
+
+});
+
+document.getElementById("metricas").innerText=
+"Ventas Totales: $"+totalVentas+" | Producto más vendido: "+topProducto;
+
+document.getElementById("resultado").classList.remove("hidden");
+
+}
+
+/* Exportaciones */
+
+function exportarPDF(){
+
+try{
+
+alert("Reporte generado exitosamente");
+
+}catch{
+
+alert("No se pudo generar el archivo. Intente nuevamente o verifique el espacio en disco.");
+
+}
+
+}
+
+function exportarExcel(){
+
+try{
+
+alert("Reporte generado exitosamente");
+
+}catch{
+
+alert("No se pudo generar el archivo. Intente nuevamente o verifique el espacio en disco.");
+
+}
+
+}
+
+function enviarCorreo(){
+
+alert("Reporte generado exitosamente");
+
+}
+
+</script>
+
+</body>
+</html>
