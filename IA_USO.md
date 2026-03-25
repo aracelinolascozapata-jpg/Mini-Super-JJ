@@ -9,7 +9,9 @@ Mejorar la funcionalidad de las interfaces
 Gracias a esto, se logra:
 
 ✔ Reducir errores en las interfaces
+
 ✔ Mejorar la experiencia del usuario
+
 ✔ Mantener un código más limpio y eficiente
 
 La implementación de IA ha permitido una identificación temprana de problemas, facilitando un desarrollo más ágil y confiable.
