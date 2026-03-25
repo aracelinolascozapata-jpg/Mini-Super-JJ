@@ -2,9 +2,13 @@
 Proyecto de Software de "Mini Super JJ"
 
 Integrantes:
+
 -Amabely Aidely Torres Fernandez
+
 -Juan Daniel Sanchez Rivera
+
 -Ricardo Sifuentes Mendez
+
 -Araceli Nolasco Zapata
 
 Descripción del proyecto:
@@ -22,6 +26,8 @@ usuario podrá ingresar nuevos productos al inventario indicando datos como nomb
 precio de compra, precio de venta, proveedor y cantidad disponible.
 
 Tecnologías utilizadas:
+
 -Whatsapp: Para comunicarnos con la dueña de el negocio de 'Mini Super JJ'.
+
 -GitHub: Para repartir el trabajo del proyecto y organizarnos mejor.
 
