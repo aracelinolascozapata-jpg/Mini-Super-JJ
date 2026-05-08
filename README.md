@@ -28,8 +28,12 @@ precio de compra, precio de venta, proveedor y cantidad disponible.
 Tecnologías utilizadas:
 
 -Servidor: Tomcat
+
 -Base de datos : Oracle
+
 -Backend: JAVA
+
 -Frontend: HTML
+
 -GitHub: Para repartir el trabajo del proyecto y organizarnos mejor.
 
