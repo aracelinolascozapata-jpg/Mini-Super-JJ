@@ -82,6 +82,7 @@ font-weight:bold;
 <select id="rol">
 <option>Encargado</option>
 <option>Propietario</option>
+<option>Gerente</option>	
 </select>
 
 <br><br>
@@ -106,89 +107,91 @@ Revocar acceso
 
 <script>
 
-/* Usuarios registrados */
-
-let usuarios=[
-{usuario:"encargado1",rol:"Encargado",password:"1111",activo:true},
-{usuario:"encargado2",rol:"Encargado",password:"2222",activo:true}
-];
-
-let indiceSeleccionado=null;
-
 /* Mostrar lista de usuarios */
 
-function mostrarUsuarios(){
+let usuariosDB = [];
 
-let tabla=document.getElementById("tablaUsuarios");
-tabla.innerHTML="";
-
-usuarios.forEach((u,i)=>{
-
-let fila="<tr>";
-fila+="<td>"+u.usuario+"</td>";
-fila+="<td>"+u.rol+"</td>";
-fila+="<td><button onclick='seleccionarUsuario("+i+")'>Editar</button></td>";
-fila+="</tr>";
-
-tabla.innerHTML+=fila;
-
-});
-
+function cargarUsuariosDesdeDB() {
+    fetch('SeguridadServlet')
+        .then(response => response.json())
+        .then(data => {
+            usuariosDB = data;
+            renderizarTabla();
+        })
+        .catch(error => console.error('Error al cargar usuarios:', error));
 }
 
-mostrarUsuarios();
+function renderizarTabla() {
+    let tabla = document.getElementById("tablaUsuarios");
+    tabla.innerHTML = "";
 
-/* Seleccionar usuario */
-
-function seleccionarUsuario(i){
-
-indiceSeleccionado=i;
-
-let usuario=usuarios[i];
-
-document.getElementById("usuarioSeleccionado").innerText=
-"Usuario: "+usuario.usuario;
-
-document.getElementById("rol").value=usuario.rol;
-
-document.getElementById("panelEdicion").style.display="block";
-
+    usuariosDB.forEach((u, i) => {
+        let fila = `<tr>
+            <td>${u.usuario}</td>
+            <td>${u.rol}</td>
+            <td><button onclick="seleccionarUsuario(${i})">Editar</button></td>
+        </tr>`;
+        tabla.innerHTML += fila;
+    });
 }
+
+// Llamamos a la función al cargar la página
+window.onload = cargarUsuariosDesdeDB;
+
+/* Actualiza también seleccionarUsuario para que use el nuevo arreglo */
+function seleccionarUsuario(i) {
+    indiceSeleccionado = i;
+    let usuario = usuariosDB[i];
+    document.getElementById("usuarioSeleccionado").innerText = "Usuario: " + usuario.usuario;
+    document.getElementById("rol").value = usuario.rol;
+    document.getElementById("panelEdicion").style.display = "block";
+}
+
 
 /* Guardar cambios */
 
-function guardarCambios(){
+function guardarCambios() {
+    let mensaje = document.getElementById("mensaje");
+    let usuarioActual = usuariosDB[indiceSeleccionado]; // Usamos el arreglo de la DB
+    
+    let nuevoRol = document.getElementById("rol").value;
+    let nuevaPass = document.getElementById("password").value;
+    // Si el checkbox está marcado, enviamos 'true'
+    let revocar = document.getElementById("revocar").checked;
 
-let mensaje=document.getElementById("mensaje");
+    // Convertimos el nombre del rol a ID (1=Dueño, 2=Encargado, 3=Gerente)
+    let idRol;
+    if (nuevoRol === "Propietario" || nuevoRol === "Dueño") {
+        idRol = 1;
+    } else if (nuevoRol === "Encargado" || nuevoRol === "Empleado") {
+        idRol = 2;
+    } else if (nuevoRol === "Gerente") {
+        idRol = 3;
+    }
 
-try{
+    mensaje.innerText = "Guardando en Oracle...";
 
-let usuario=usuarios[indiceSeleccionado];
-
-usuario.rol=document.getElementById("rol").value;
-
-let nuevaPassword=document.getElementById("password").value;
-
-if(nuevaPassword!=""){
-usuario.password=nuevaPassword;
-}
-
-if(document.getElementById("revocar").checked){
-usuario.activo=false;
-}
-
-mensaje.style.color="green";
-mensaje.innerText="Cambios guardados correctamente.";
-
-}catch{
-
-/* 6.1 Error de guardado */
-
-mensaje.style.color="red";
-mensaje.innerText="No se pudieron guardar los cambios";
-
-}
-
+    fetch('SeguridadServlet', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: `idLogin=${usuarioActual.id}&idRol=${idRol}&password=${encodeURIComponent(nuevaPass)}&revocar=${revocar}`
+    })
+    .then(response => response.text())
+    .then(res => {
+        if (res === "ok") {
+            mensaje.style.color = "green";
+            mensaje.innerText = "¡Cambios guardados en la base de datos!";
+            cargarUsuariosDesdeDB(); // Recargamos la tabla para ver los cambios
+        } else {
+            mensaje.style.color = "red";
+            mensaje.innerText = "Error al actualizar en Oracle";
+        }
+    })
+    .catch(error => {
+        mensaje.style.color = "red";
+        mensaje.innerText = "Error de red";
+        console.error(error);
+    });
 }
 
 </script>
