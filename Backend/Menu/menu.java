@@ -1,1 +1,243 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+<title>Menú Principal - Minisuper JJ</title>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial, Helvetica, sans-serif;
+}
+
+body{
+    background:#f4f6f9;
+}
+
+/* HEADER */
+
+header{
+    background:#2c3e50;
+    color:white;
+    padding:20px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+header h1{
+    font-size:32px;
+}
+
+.usuario{
+    background:#34495e;
+    padding:10px 15px;
+    border-radius:8px;
+    font-size:18px;
+}
+
+/* CONTENIDO */
+
+.container{
+    padding:30px;
+}
+
+.titulo{
+    margin-bottom:30px;
+}
+
+.titulo h2{
+    color:#2c3e50;
+    font-size:30px;
+}
+
+.titulo p{
+    color:#666;
+    margin-top:10px;
+}
+
+/* MENU */
+
+.menu{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));
+    gap:25px;
+}
+
+/* TARJETAS */
+
+.card{
+    background:white;
+    border-radius:15px;
+    padding:25px;
+    box-shadow:0px 5px 15px rgba(0,0,0,0.1);
+    transition:0.3s;
+}
+
+.card:hover{
+    transform:translateY(-5px);
+}
+
+.card h3{
+    color:#2c3e50;
+    margin-bottom:15px;
+}
+
+.card p{
+    color:#666;
+    margin-bottom:20px;
+    line-height:1.5;
+}
+
+.card button{
+    width:100%;
+    padding:12px;
+    border:none;
+    border-radius:8px;
+    background:#27ae60;
+    color:white;
+    font-size:16px;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+.card button:hover{
+    background:#1f8a4d;
+}
+
+</style>
+</head>
+
+<body>
+
+<header>
+
+    <h1>MINISUPER JJ</h1>
+
+    <div class="usuario">
+        Usuario: Propietario
+    </div>
+
+</header>
+
+<div class="container">
+
+    <div class="titulo">
+
+        <h2>Menú Principal</h2>
+
+        <p>
+            Selecciona una opción del sistema
+        </p>
+
+    </div>
+
+    <div class="menu">
+
+        <!-- REGISTRAR VENTA -->
+
+        <div class="card">
+
+            <h3>Registrar Venta</h3>
+
+            <p>
+                Registrar productos vendidos y generar tickets.
+            </p>
+
+            <button onclick="window.location.href='RegistrarVenta.html'">
+                Entrar
+            </button>
+
+        </div>
+
+        <!-- MERCANCIA -->
+
+        <div class="card">
+
+            <h3>Registrar Entrada de Mercancía</h3>
+
+            <p>
+                Registrar nuevos productos y entradas de almacén.
+            </p>
+
+            <button onclick="window.location.href='RegistrarEntradaDeMercancia.html'">
+                Entrar
+            </button>
+
+        </div>
+
+        <!-- ADEUDOS -->
+
+        <div class="card">
+
+            <h3>Registrar y Gestionar Adeudos</h3>
+
+            <p>
+                Control de clientes con adeudos pendientes.
+            </p>
+
+            <button onclick="window.location.href='RegistrarYGestionarAdeudoDeCliente.html'">
+                Entrar
+            </button>
+
+        </div>
+
+        <!-- CAJA -->
+
+        <div class="card">
+
+            <h3>Gestionar Caja y Flujo de Efectivo</h3>
+
+            <p>
+                Administración del efectivo y movimientos de caja.
+            </p>
+
+            <button onclick="window.location.href='GestionarCajaYFlujoDeEfectivo.html'">
+                Entrar
+            </button>
+
+        </div>
+
+        <!-- REPORTES -->
+
+        <div class="card">
+
+            <h3>Reporte de Ventas y Rotación</h3>
+
+            <p>
+                Visualizar estadísticas y reportes del negocio.
+            </p>
+
+            <button onclick="window.location.href='GenerarReporteDeVentasYRotacion.html'">
+                Entrar
+            </button>
+
+        </div>
+
+        <!-- SEGURIDAD -->
+
+        <div class="card">
+
+            <h3>Módulo Usuarios de Seguridad</h3>
+
+            <p>
+                Crear y administrar usuarios del sistema.
+            </p>
+
+            <button onclick="window.location.href='seguridad_y_usuarios.html'">
+                Entrar
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>
