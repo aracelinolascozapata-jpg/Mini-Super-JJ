@@ -72,45 +72,42 @@ margin-top:20px;
 
 <script>
 
-/* Usuarios registrados */
 
-let usuarios=[
-{usuario:"propietario",password:"1234",rol:"Propietario"},
-{usuario:"encargado",password:"abcd",rol:"Encargado"}
-];
 
-function iniciarSesion(){
+function iniciarSesion() {
+    let correo = document.getElementById("usuario").value; 
+    let password = document.getElementById("password").value;
+    let mensaje = document.getElementById("mensaje");
+    
+    mensaje.innerText = "Verificando...";
 
-let usuario=document.getElementById("usuario").value;
-let password=document.getElementById("password").value;
-let mensaje=document.getElementById("mensaje");
+    fetch('LoginServlet', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: 'correo=' + encodeURIComponent(correo) + '&password=' + encodeURIComponent(password)
+    })
+    .then(response => response.text())
+    .then(resultado => {
+    let id = resultado.trim();
+    console.log("ID de Rol recibido:", id);
 
-mensaje.innerText="";
-
-/* Verificar credenciales */
-
-let encontrado=usuarios.find(u=>u.usuario===usuario && u.password===password);
-
-/* 5.1 Credenciales inválidas */
-
-if(!encontrado){
-
-mensaje.innerText="Datos incorrectos";
-return;
-
-}
-
-/* Identificar rol */
-
-document.getElementById("rolUsuario").innerText=
-"Bienvenido "+encontrado.rol;
-
-/* Mostrar menú */
-
-document.getElementById("menu").style.display="block";
-
-mensaje.innerText="";
-
+    if (id === "1" || id === "3") { 
+        window.location.href = "menu_principal.html"; 
+    } 
+    else if (id === "2") { 
+        window.location.href = "menu_empleado.html";
+    } 
+    else if (id === "error") {
+        mensaje.innerText = "Correo o contraseña incorrectos";
+    } 
+    else {
+        mensaje.innerText = "Error en la respuesta del servidor";
+    }
+    })
+    .catch(error => {
+        mensaje.innerText = "Error de red";
+        console.error(error);
+    });
 }
 
 </script>
