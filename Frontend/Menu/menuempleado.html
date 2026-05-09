@@ -1,227 +1,58 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+package puente;
 
-<title>Menú Principal Empleado - Minisuper JJ</title>
+import java.io.IOException; 
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
-<style>
+@WebServlet("/LoginServlet")
+public class servidor extends HttpServlet {
+    private static final long serialVersionUID = 1L;
 
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:Arial, Helvetica, sans-serif;
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    	String correo = request.getParameter("correo");
+        String password = request.getParameter("password");
+  
+        response.setContentType("text/plain");
+        PrintWriter out = response.getWriter();
+
+        String url = "jdbc:oracle:thin:@localhost:1521:xe";
+        String user = "soft"; 
+        String passDB = "soft"; 
+
+        try {
+            // ESTA LÍNEA SOLUCIONA EL ERROR DEL DRIVER
+            Class.forName("oracle.jdbc.OracleDriver");
+            
+            try (Connection conn = DriverManager.getConnection(url, user, passDB)) {
+            	String sql = "SELECT e.ID_ROL FROM LOGIN l " +
+                        "JOIN EMPLEADOS e ON l.ID_EMPLEADO = e.ID_EMPLEADO " +
+                        "WHERE l.CORREO = ? AND l.CONTRASENA = ?";
+                             
+                try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                    ps.setString(1, correo);
+                    ps.setString(2, password);
+                    
+                    try (ResultSet rs = ps.executeQuery()) {
+                        if (rs.next()) {
+                        	int idRol = rs.getInt("ID_ROL");
+                        	out.print(idRol);
+                        } else {
+                            out.print("error");
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            out.print("error_servidor");
+        }
+    }
 }
-
-body{
-    background:#f4f6f9;
-}
-
-/* HEADER */
-
-header{
-    background:#2c3e50;
-    color:white;
-    padding:20px;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-}
-
-header h1{
-    font-size:32px;
-}
-
-.usuario{
-    background:#34495e;
-    padding:10px 15px;
-    border-radius:8px;
-    font-size:18px;
-}
-
-/* CONTENIDO */
-
-.container{
-    padding:30px;
-}
-
-.titulo{
-    margin-bottom:30px;
-}
-
-.titulo h2{
-    color:#2c3e50;
-    font-size:30px;
-}
-
-.titulo p{
-    color:#666;
-    margin-top:10px;
-}
-
-/* MENU */
-
-.menu{
-    display:grid;
-    grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));
-    gap:25px;
-}
-
-/* TARJETAS */
-
-.card{
-    background:white;
-    border-radius:15px;
-    padding:25px;
-    box-shadow:0px 5px 15px rgba(0,0,0,0.1);
-    transition:0.3s;
-}
-
-.card:hover{
-    transform:translateY(-5px);
-}
-
-.card h3{
-    color:#2c3e50;
-    margin-bottom:15px;
-}
-
-.card p{
-    color:#666;
-    margin-bottom:20px;
-    line-height:1.5;
-}
-
-.card button{
-    width:100%;
-    padding:12px;
-    border:none;
-    border-radius:8px;
-    background:#27ae60;
-    color:white;
-    font-size:16px;
-    cursor:pointer;
-    transition:0.3s;
-}
-
-.card button:hover{
-    background:#1f8a4d;
-}
-
-</style>
-</head>
-
-<body>
-
-<header>
-
-    <h1>MINISUPER JJ</h1>
-
-    <div class="usuario">
-        Usuario: Empleado
-    </div>
-
-</header>
-
-<div class="container">
-
-    <div class="titulo">
-
-        <h2>Menú Principal</h2>
-
-        <p>
-            Selecciona una opción del sistema
-        </p>
-
-    </div>
-
-    <div class="menu">
-
-        <!-- REGISTRAR VENTA -->
-
-        <div class="card">
-
-            <h3>Registrar Venta</h3>
-
-            <p>
-                Registrar productos vendidos y generar tickets.
-            </p>
-
-            <button onclick="window.location.href='registrar_venta.html'">
-                Entrar
-            </button>
-
-        </div>
-
-        <!-- MERCANCIA -->
-
-        <div class="card">
-
-            <h3>Registrar Entrada de Mercancía</h3>
-
-            <p>
-                Registrar nuevos productos y entradas de almacén.
-            </p>
-
-            <button onclick="window.location.href='mercancia.html'">
-                Entrar
-            </button>
-
-        </div>
-
-        <!-- ADEUDOS -->
-
-        <div class="card">
-
-            <h3>Registrar y Gestionar Adeudos</h3>
-
-            <p>
-                Control de clientes con adeudos pendientes.
-            </p>
-
-            <button onclick="window.location.href='adeudos.html'">
-                Entrar
-            </button>
-
-        </div>
-
-        <!-- CAJA -->
-
-        <div class="card">
-
-            <h3>Gestionar Caja y Flujo de Efectivo</h3>
-
-            <p>
-                Administración del efectivo y movimientos de caja.
-            </p>
-
-            <button onclick="window.location.href='caja.html'">
-                Entrar
-            </button>
-
-        </div>
-
-        <!-- REPORTES -->
-
-        <div class="card">
-
-            <h3>Reporte de Ventas y Rotación</h3>
-
-            <p>
-                Visualizar estadísticas y reportes del negocio.
-            </p>
-
-            <button onclick="window.location.href='reportes.html'">
-                Entrar
-            </button>
-
-        </div>
-
-    </div>
-
-</div>
-
-</body>
-</html>
