@@ -1,263 +1,149 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-<meta charset="UTF-8">
-<title>Gestionar Caja y Flujo de Efectivo</title>
+package puente;
 
-<style>
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.sql.SQLException;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
-body{
-font-family:Arial;
-background:#f4f4f4;
-margin:0;
+@WebServlet("/caja")
+public class caja extends HttpServlet {
+    private static final long serialVersionUID = 1L;
+
+    String url = "jdbc:oracle:thin:@localhost:1521:xe";
+    String user = "soft";
+    String pass = "soft";
+
+    // 1. OBTENER ESTADO ACTUAL DE LA CAJA Y SUMATORIAS REALES (doGet)
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        PrintWriter out = response.getWriter();
+
+        String accion = request.getParameter("accion");
+
+        try {
+            Class.forName("oracle.jdbc.OracleDriver");
+            try (Connection conn = DriverManager.getConnection(url, user, pass)) {
+                Statement st = conn.createStatement();
+
+                // A) Verificar si hay una caja abierta hoy (id_estado = 1)
+                if ("verificarEstado".equals(accion)) {
+                    String sql = "SELECT id_caja, fondo_inicial FROM Caja WHERE id_estado = 1 AND TRUNC(fecha) = TRUNC(SYSDATE)";
+                    ResultSet rs = st.executeQuery(sql);
+                    
+                    if (rs.next()) {
+                        out.print("{\"abierta\":true, \"id_caja\":" + rs.getLong("id_caja") + ", \"fondo_inicial\":" + rs.getDouble("fondo_inicial") + "}");
+                    } else {
+                        out.print("{\"abierta\":false}");
+                    }
+                }
+                
+                // B) Calcular los ingresos y egresos reales del día para el resumen
+                else if ("calcularResumen".equals(accion)) {
+                    double fondoInicial = Double.parseDouble(request.getParameter("fondo"));
+                    
+                    // 1. Sumar ventas en Efectivo de hoy (id_pago = 1)
+                    double ventasEfectivo = 0;
+                    ResultSet rsVentasEfe = st.executeQuery("SELECT SUM(total) AS suma FROM Ventas WHERE id_pago = 1 AND TRUNC(fecha) = TRUNC(SYSDATE)");
+                    if (rsVentasEfe.next()) ventasEfectivo = rsVentasEfe.getDouble("suma");
+
+                    // 2. Sumar ventas con Mercado Pago de hoy (id_pago = 2)
+                    double ventasMercado = 0;
+                    ResultSet rsVentasMer = st.executeQuery("SELECT SUM(total) AS suma FROM Ventas WHERE id_pago = 2 AND TRUNC(fecha) = TRUNC(SYSDATE)");
+                    if (rsVentasMer.next()) ventasMercado = rsVentasMer.getDouble("suma");
+
+                    // 3. Sumar pagos/abonos a Adeudos registrados hoy (Se calcula comparando el monto original vs pendiente si tuvieras tabla de historial, aquí asumimos un estimado o consulta base)
+                    // Nota: Como la tabla Adeudos no guarda el abono individual por fecha en el script, ponemos un valor referencial o lo dejamos listo
+                    double pagosAdeudos = 0; 
+                    
+                    // 4. Sumar Egresos (Pagos a proveedores en la tabla Pedidos de hoy)
+                    double egresos = 0;
+                    ResultSet rsEgresos = st.executeQuery("SELECT SUM(pago) AS suma FROM Pedidos WHERE TRUNC(fecha) = TRUNC(SYSDATE)");
+                    if (rsEgresos.next()) egresos = rsEgresos.getDouble("suma");
+
+                    double totalTeorico = fondoInicial + ventasEfectivo + pagosAdeudos - egresos;
+
+                    StringBuilder json = new StringBuilder("{");
+                    json.append("\"ventasEfectivo\":").append(ventasEfectivo).append(",")
+                        .append("\"ventasMercado\":").append(ventasMercado).append(",")
+                        .append("\"pagosAdeudos\":").append(pagosAdeudos).append(",")
+                        .append("\"egresos\":").append(egresos).append(",")
+                        .append("\"totalTeorico\":").append(totalTeorico)
+                        .append("}");
+                    out.print(json.toString());
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            out.print("{}");
+        }
+    }
+
+    // 2. PROCESAR APERTURA O CIERRE EN LA BASE DE DATOS (doPost)
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        response.setContentType("text/plain;charset=UTF-8");
+        PrintWriter out = response.getWriter();
+
+        String operacion = request.getParameter("operacion");
+        int idEmpleado = 1; // Empleado por defecto obligatorio en tu BD
+
+        Connection conn = null;
+
+        try {
+            Class.forName("oracle.jdbc.OracleDriver");
+            conn = DriverManager.getConnection(url, user, pass);
+            conn.setAutoCommit(false);
+
+            // A) ABRIR CAJA
+            if ("abrir".equals(operacion)) {
+                double fondo = Double.parseDouble(request.getParameter("fondo"));
+                
+                // Insertamos con id_estado = 1 (Abierta)
+                String sql = "INSERT INTO Caja (id_caja, id_estado, id_empleado, fecha, fondo_inicial) " +
+                             "VALUES (SEQ_CAJA.NEXTVAL, 1, ?, SYSDATE, ?)";
+                try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                    ps.setInt(1, idEmpleado);
+                    ps.setDouble(2, fondo);
+                    ps.executeUpdate();
+                }
+                conn.commit();
+                out.print("ok");
+            }
+            
+            // B) CERRAR CAJA
+            else if ("cerrar".equals(operacion)) {
+                long idCaja = Long.parseLong(request.getParameter("idCaja"));
+                double conteo = Double.parseDouble(request.getParameter("conteo"));
+                double diferencia = Double.parseDouble(request.getParameter("diferencia"));
+                // El campo "nota" no existe en tu tabla Caja original, por lo que actualizamos estrictamente los campos numéricos
+                
+                // Actualizamos a id_estado = 2 (Cerrada)
+                String sql = "UPDATE Caja SET id_estado = 2, conteo_fisico = ?, diferencia = ? WHERE id_caja = ?";
+                try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                    ps.setDouble(1, conteo);
+                    ps.setDouble(2, diferencia);
+                    ps.setLong(3, idCaja);
+                    ps.executeUpdate();
+                }
+                conn.commit();
+                out.print("ok");
+            }
+
+        } catch (Exception e) {
+            try { if (conn != null) conn.rollback(); } catch (SQLException ex) { }
+            out.print("error: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            try { if (conn != null) { conn.setAutoCommit(true); conn.close(); } } catch (SQLException e) { }
+        }
+    }
 }
-
-header{
-background:#2c3e50;
-color:white;
-padding:15px;
-text-align:center;
-}
-
-.container{
-padding:20px;
-}
-
-button{
-padding:8px 12px;
-margin:5px;
-cursor:pointer;
-}
-
-input{
-padding:8px;
-margin:5px;
-}
-
-.hidden{
-display:none;
-}
-
-.reporte{
-background:white;
-border:1px solid #ccc;
-padding:15px;
-margin-top:20px;
-}
-
-</style>
-</head>
-
-<body>
-
-<header>
-<h2>Gestionar Caja y Flujo de Efectivo</h2>
-</header>
-
-<div class="container">
-
-<div id="menuCaja">
-
-<h3>Caja</h3>
-
-<button onclick="abrirCajaPantalla()">Abrir Caja</button>
-<button onclick="cerrarCajaPantalla()">Cerrar Caja</button>
-
-</div>
-
-<div id="apertura" class="hidden">
-
-<h3>Apertura de Caja</h3>
-
-<label>Fondo Inicial</label>
-<input type="number" id="fondoInicial">
-
-<br>
-
-<label>Nota (opcional)</label>
-<input type="text" id="notaApertura">
-
-<br>
-
-<button onclick="abrirCaja()">Abrir Caja</button>
-
-</div>
-
-<div id="cierre" class="hidden">
-
-<h3>Cierre de Caja</h3>
-
-<div id="resumenCaja"></div>
-
-<br>
-
-<label>Conteo Físico Real</label>
-<input type="number" id="conteoFisico">
-
-<br>
-
-<label>Nota de Justificación (opcional)</label>
-<input type="text" id="notaCierre">
-
-<br>
-
-<button onclick="confirmarCierre()">Cerrar Caja y Generar Reporte</button>
-
-</div>
-
-<div id="reporte" class="hidden reporte"></div>
-
-</div>
-
-<script>
-
-let cajaAbierta=false;
-let fondoInicial=0;
-
-let ventasEfectivo=300;
-let ventasMercadoPago=200;
-let pagosAdeudos=50;
-let egresos=100;
-
-
-/* Mostrar pantalla apertura */
-
-function abrirCajaPantalla(){
-
-document.getElementById("apertura").classList.remove("hidden");
-
-}
-
-
-/* Apertura de caja */
-
-function abrirCaja(){
-
-/* A.2 Caja ya abierta */
-
-if(cajaAbierta){
-
-alert("Ya existe una caja abierta para hoy. Debe cerrarla antes de abrir una nueva.");
-return;
-
-}
-
-fondoInicial=parseFloat(document.getElementById("fondoInicial").value);
-
-cajaAbierta=true;
-
-alert("Caja abierta. Fondo inicial: $"+fondoInicial);
-
-document.getElementById("apertura").classList.add("hidden");
-
-}
-
-
-/* Mostrar pantalla cierre */
-
-function cerrarCajaPantalla(){
-
-if(!cajaAbierta){
-
-alert("No hay una caja abierta.");
-return;
-
-}
-
-document.getElementById("cierre").classList.remove("hidden");
-
-let totalTeorico=fondoInicial+ventasEfectivo+pagosAdeudos-egresos;
-
-let resumen="Fondo inicial: $"+fondoInicial+"<br>";
-resumen+="Total de ventas en efectivo: $"+ventasEfectivo+"<br>";
-resumen+="Total de ventas con Mercado Pago: $"+ventasMercadoPago+"<br>";
-resumen+="Total de pagos de adeudos recibidos: $"+pagosAdeudos+"<br>";
-resumen+="Total de egresos (pagos a proveedores): $"+egresos+"<br>";
-resumen+="<br>Total teórico en caja: $"+totalTeorico;
-
-document.getElementById("resumenCaja").innerHTML=resumen;
-
-}
-
-
-/* Confirmar cierre */
-
-function confirmarCierre(){
-
-let conteo=parseFloat(document.getElementById("conteoFisico").value);
-
-let totalTeorico=fondoInicial+ventasEfectivo+pagosAdeudos-egresos;
-
-let diferencia=conteo-totalTeorico;
-
-let nota=document.getElementById("notaCierre").value;
-
-
-/* Paso 6: nota de justificación si hay diferencia */
-
-if(diferencia!=0 && nota==""){
-
-let agregar=confirm("Existe una diferencia. ¿Desea agregar una nota de justificación?");
-
-if(!agregar){
-nota="Sin justificación";
-}
-
-}
-
-
-/* B.3 Conteo físico incongruente */
-
-if(Math.abs(diferencia)>500){
-
-let revisar=confirm("Diferencia significativa. ¿Desea revisar los movimientos antes de cerrar?");
-
-if(revisar){
-return;
-}
-
-/* opción Forzar Cierre = continuar */
-
-}
-
-
-/* Paso 7 y 8: cierre y generación de reporte */
-
-try{
-
-cajaAbierta=false;
-
-let reporte="REPORTE DE CIERRE<br><br>";
-reporte+="Fondo inicial: $"+fondoInicial+"<br>";
-reporte+="Ventas efectivo: $"+ventasEfectivo+"<br>";
-reporte+="Ventas Mercado Pago: $"+ventasMercadoPago+"<br>";
-reporte+="Pagos de adeudos: $"+pagosAdeudos+"<br>";
-reporte+="Egresos: $"+egresos+"<br>";
-reporte+="Conteo físico: $"+conteo+"<br>";
-reporte+="Total teórico: $"+totalTeorico+"<br>";
-reporte+="Diferencia: $"+diferencia+"<br>";
-reporte+="Nota de justificación: "+nota+"<br>";
-reporte+="Estado de la caja: Cerrada";
-
-document.getElementById("cierre").classList.add("hidden");
-
-let rep=document.getElementById("reporte");
-rep.innerHTML=reporte;
-rep.classList.remove("hidden");
-
-}
-
-/* B.7 Error al cerrar */
-
-catch{
-
-alert("No se pudo generar el reporte, pero la caja se ha cerrado. Intente generar el reporte desde el historial.");
-
-}
-
-}
-
-</script>
-
-</body>
-</html>
