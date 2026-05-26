@@ -2,270 +2,492 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Registrar y Gestionar Adeudo de Cliente</title>
 
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+
 <style>
-
-body{
-font-family:Arial;
-background:#f4f4f4;
-margin:0;
+/* Base de interfaz profesional */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
 }
 
-header{
-background:#2980b9;
-color:white;
-padding:15px;
-text-align:center;
+body { 
+    background: linear-gradient(135deg, #f0f4f8 0%, #d6e6f2 100%); /* Fondo limpio */
+    margin: 0; 
+    color: #4a403a; /* Marrón vintage oscuro */
+    min-height: 100vh;
+    padding: 30px 20px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
 }
 
-.container{
-padding:20px;
+/* Panel contenedor estilo tarjeta de alta fidelidad */
+.container { 
+    width: 100%;
+    max-width: 950px;
+    background: #ffffff; /* Blanco puro para dar aire */
+    padding: 40px; 
+    border-radius: 16px;
+    box-shadow: 0 12px 35px rgba(74, 64, 58, 0.04);
+    border: 1px solid rgba(232, 229, 226, 0.6);
 }
 
-table{
-width:100%;
-border-collapse:collapse;
-background:white;
+/* Encabezado e hilos de títulos */
+h2 {
+    font-size: 22px;
+    font-weight: 700;
+    color: #4a403a;
+    margin-bottom: 30px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    letter-spacing: -0.5px;
 }
 
-th,td{
-border:1px solid #ccc;
-padding:10px;
-text-align:center;
+h3 {
+    color: #4a403a;
+    font-size: 15px;
+    font-weight: 600;
+    margin-top: 0;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
-th{
-background:#eee;
+/* Zona de Formularios Inteligente */
+.seccion-registro {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+    background: #fcfbfa; /* Fondo beige ultra suave de acento */
+    padding: 25px;
+    border-radius: 12px;
+    border: 1px solid #e8e5e2;
 }
 
-button{
-padding:8px 12px;
-margin:5px;
-cursor:pointer;
+.form-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    align-items: flex-end;
 }
 
-.hidden{
-display:none;
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
 }
 
+.flex-grow {
+    flex: 1;
+    min-width: 250px;
+}
+
+label {
+    font-weight: 600;
+    font-size: 12px;
+    color: #615c58;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Campos de entrada refinados */
+input, select { 
+    padding: 11px 14px; 
+    border: 1px solid #e8e5e2;
+    border-radius: 8px;
+    font-size: 14px;
+    outline: none;
+    background-color: #ffffff;
+    color: #4a403a;
+    transition: all 0.3s ease;
+    width: 100%;
+}
+
+input:focus, select:focus {
+    border-color: #cbd0f1; /* Foco Lila Pastel */
+    box-shadow: 0 0 0 3px rgba(203, 208, 241, 0.25);
+}
+
+/* Contenedor monetario formal */
+.input-moneda {
+    position: relative;
+    display: flex;
+    align-items: center;
+    max-width: 160px;
+}
+
+.input-moneda span {
+    position: absolute;
+    left: 14px;
+    color: #b0aaa6;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.input-moneda input {
+    padding-left: 28px;
+}
+
+/* Botones con arquitectura formal */
+button { 
+    padding: 11px 18px; 
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer; 
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    color: #4a403a;
+}
+
+button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+}
+
+button:active {
+    transform: translateY(1px);
+}
+
+/* Variaciones cromáticas pastel equilibradas */
+.btn-primary { background: #cbd0f1; color: #3b3e54; } /* Lila */
+.btn-primary:hover { background: #babcde; }
+
+.btn-success { background: #d1ebd9; color: #3b5249; } /* Verde Menta */
+.btn-success:hover { background: #b8dec4; }
+
+.btn-secondary { background: #ffffff; border: 1px solid #e8e5e2; color: #615c58; }
+.btn-secondary:hover { background: #dad6d2; }
+
+.btn-action { background: #f7cbd0; color: #634347; padding: 6px 14px; font-size: 12px; border-radius: 6px; } /* Rosa */
+.btn-action:hover { background: #f0b4bc; }
+
+.btn-confirmar-pago { background-color: #4a403a; color: #ffffff; }
+.btn-confirmar-pago:hover { background-color: #38302b; }
+
+hr {
+    border: 0;
+    height: 1px;
+    background: #e8e5e2;
+    margin: 35px 0;
+}
+
+/* Tablas Corporativas */
+.table-wrapper {
+    overflow-x: auto;
+    border: 1px solid #e8e5e2;
+    border-radius: 10px;
+    margin-top: 15px;
+}
+
+table { 
+    width: 100%; 
+    border-collapse: collapse; 
+    background: #ffffff; 
+    font-size: 14px;
+    text-align: left;
+}
+
+th, td { 
+    padding: 14px 18px; 
+    border-bottom: 1px solid #e8e5e2;
+}
+
+th { 
+    background: #f2f4fa; /* Gris/lila ultra suave */
+    font-weight: 600;
+    color: #5c534e;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+tr:last-child td {
+    border-bottom: none;
+}
+
+tr:hover td {
+    background-color: #fcfbfa;
+}
+
+.hidden { display: none !important; }
+
+/* Tarjeta de Abonos / Pagos Refinada */
+.panel-pago { 
+    background: #fbf0cb; /* Vainilla Pastel de fondo */
+    border: 1px solid #f5e2a4;
+    padding: 30px; 
+    margin-top: 35px; 
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(251, 240, 203, 0.25);
+    animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+}
 </style>
-
 </head>
 
 <body>
 
-<header>
-<h2>Registrar y Gestionar Adeudo de Cliente</h2>
-</header>
-
 <div class="container">
 
-<h3>Registrar Adeudo</h3>
+    <h2><span class="material-icons-outlined" style="color: #cbd0f1; font-size: 28px;">account_balance_wallet</span> Gestión y Control de Adeudos</h2>
 
-<label>Cliente</label>
-<select id="cliente">
-<option value="">Seleccionar cliente</option>
-<option>Juan Pérez</option>
-<option>Ana López</option>
-</select>
+    <h3><span class="material-icons-outlined" style="font-size: 18px; color: #615c58;">person_add_alt</span> Registrar Nuevo Adeudo</h3>
 
-<button onclick="registrarCliente()">Registrar Cliente Nuevo</button>
+    <div class="seccion-registro">
+        <div class="form-row">
+            <div class="form-group flex-grow">
+                <label for="cliente">Cliente vinculado</label>
+                <select id="cliente">
+                    <option value="">Cargando clientes de BD...</option>
+                </select>
+            </div>
+            <button onclick="registrarCliente()" class="btn-primary">
+                <span class="material-icons-outlined" style="font-size: 18px;">person_add</span> Registrar Cliente
+            </button>
+            <button onclick="cargarClientes()" class="btn-secondary">
+                <span class="material-icons-outlined" style="font-size: 18px;">refresh</span> Actualizar
+            </button>
+        </div>
 
-<br><br>
+        <div class="form-row" style="margin-top: 10px;">
+            <div class="form-group">
+                <label for="montoVenta">Monto total de la deuda</label>
+                <div class="input-moneda">
+                    <span>$</span>
+                    <input type="number" id="montoVenta" step="0.50" placeholder="0.00">
+                </div>
+            </div>
+            <button onclick="registrarAdeudo()" class="btn-success">
+                <span class="material-icons-outlined" style="font-size: 18px;">check_circle_outline</span> Guardar Adeudo en Oracle
+            </button>
+        </div>
+    </div>
 
-<label>Total de la venta</label>
-<input type="number" id="montoVenta">
+    <hr>
 
-<br><br>
+    <h3><span class="material-icons-outlined" style="font-size: 18px; color: #615c58;">list_alt</span> Adeudos Activos en Sistema</h3>
 
-<button onclick="registrarAdeudo()">Registrar Adeudo</button>
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 110px;">ID Adeudo</th>
+                    <th>Cliente</th>
+                    <th>Fecha Límite</th>
+                    <th>Monto Pendiente</th>
+                    <th>Estado</th>
+                    <th style="text-align: center; width: 120px;">Acción</th>
+                </tr>
+            </thead>
+            <tbody id="tablaAdeudos">
+                <tr><td colspan="6" style="color: #b0aaa6; text-align: center;">Cargando registros...</td></tr>
+            </tbody>
+        </table>
+    </div>
 
-<hr>
+    <div id="pagoPanel" class="hidden panel-pago">
+        <h3 style="color: #5e5333;"><span class="material-icons-outlined" style="font-size: 20px; color: #5e5333;">payments</span> Registrar Abono / Pago</h3>
+        <p id="detalleAdeudo" style="font-weight: 500; color: #5e5333; margin-bottom: 20px; font-size: 14px;"></p>
+        
+        <input type="hidden" id="idAdeudoPago">
+        <input type="hidden" id="saldoActualPago">
 
-<h3>Adeudos Pendientes</h3>
-
-<table>
-
-<thead>
-<tr>
-<th>Cliente</th>
-<th>Fecha</th>
-<th>Monto</th>
-<th>Estado</th>
-<th>Días de atraso</th>
-<th>Acción</th>
-</tr>
-</thead>
-
-<tbody id="tablaAdeudos"></tbody>
-
-</table>
-
-<div id="pagoPanel" class="hidden">
-
-<h3>Registrar Pago</h3>
-
-<p id="detalleAdeudo"></p>
-
-<label>Monto pagado</label>
-<input type="number" id="montoPago">
-
-<br><br>
-
-<button onclick="registrarPago()">Registrar Pago</button>
-
-</div>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="montoPago" style="color: #5e5333;">Monto a abonar</label>
+                <div class="input-moneda">
+                    <span style="color: #5e5333;">$</span>
+                    <input type="number" id="montoPago" step="0.50" style="border-color: #f5e2a4;">
+                </div>
+            </div>
+            <button onclick="procesarPagoBD()" class="btn-confirmar-pago">Confirmar Pago</button>
+            <button onclick="cerrarPanelPago()" class="btn-secondary" style="background: transparent;">Cancelar</button>
+        </div>
+    </div>
 
 </div>
 
 <script>
-
-let adeudos=[];
-let adeudoSeleccionado=null;
-
-/* Registrar cliente rápido (A.3) */
-
-function registrarCliente(){
-
-let nombre=prompt("Nombre del cliente");
-
-if(nombre==null || nombre=="") return;
-
-let telefono=prompt("Teléfono (opcional)");
-
-let select=document.getElementById("cliente");
-
-let option=document.createElement("option");
-option.text=nombre;
-
-select.add(option);
-
-}
-
-
-/* Registrar adeudo */
-
-function registrarAdeudo(){
-
-let cliente=document.getElementById("cliente").value;
-let monto=parseFloat(document.getElementById("montoVenta").value);
-
-if(cliente==""){
-alert("Seleccione un cliente.");
-return;
-}
-
-let fecha=new Date();
-
-let adeudo={
-cliente:cliente,
-fecha:fecha.toLocaleDateString(),
-monto:monto,
-saldo:monto,
-estado:"Pendiente"
+// Tu JavaScript original se mantiene 100% INTACTO para el correcto enlace con tus Servlets
+window.onload = function() {
+    cargarClientes();
+    cargarAdeudos();
 };
 
-/* A.6 Error al guardar */
-
-try{
-
-adeudos.push(adeudo);
-
-alert("Adeudo registrado correctamente.");
-
-mostrarAdeudos();
-
-}catch{
-
-alert("No se pudo registrar el adeudo. La venta no se ha completado.");
-
+function cargarClientes() {
+    fetch('/inicio_sesion/adeudos?accion=cargarClientes')
+        .then(res => res.json())
+        .then(data => {
+            let select = document.getElementById("cliente");
+            select.innerHTML = '<option value="">Seleccione un cliente</option>';
+            data.forEach(c => {
+                select.innerHTML += `<option value="${c.id}">${c.nombre}</option>`;
+            });
+        })
+        .catch(err => console.error("Error cargando clientes:", err));
 }
 
+function registrarCliente(){
+    let nombre = prompt("Nombre del cliente:");
+    if (nombre == null || nombre.trim() === "") return;
+
+    let telefono = prompt("Teléfono (opcional):");
+
+    let formData = new URLSearchParams();
+    formData.append("operacion", "nuevoCliente");
+    formData.append("nombre", nombre);
+    if (telefono) formData.append("telefono", telefono);
+
+    fetch('/inicio_sesion/adeudos', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: formData.toString()
+    })
+    .then(res => res.text())
+    .then(respuesta => {
+        if (respuesta.trim() === "ok") {
+            alert("¡Cliente registrado exitosamente en la Base de Datos!");
+            cargarClientes();
+        } else {
+            alert("Error al registrar cliente: " + respuesta);
+        }
+    })
+    .catch(err => alert("Error de conexión al intentar guardar el cliente."));
 }
 
-
-/* Mostrar adeudos */
-
-function mostrarAdeudos(){
-
-let tabla=document.getElementById("tablaAdeudos");
-
-tabla.innerHTML="";
-
-adeudos.forEach((a,i)=>{
-
-let fila="<tr>";
-fila+="<td>"+a.cliente+"</td>";
-fila+="<td>"+a.fecha+"</td>";
-fila+="<td>"+a.saldo+"</td>";
-fila+="<td>"+a.estado+"</td>";
-fila+="<td>0</td>";
-fila+="<td><button onclick='seleccionarAdeudo("+i+")'>Pagar</button></td>";
-fila+="</tr>";
-
-tabla.innerHTML+=fila;
-
-});
-
+function cargarAdeudos() {
+    fetch('/inicio_sesion/adeudos?accion=cargarAdeudos')
+        .then(res => res.json())
+        .then(data => {
+            let tabla = document.getElementById("tablaAdeudos");
+            tabla.innerHTML = "";
+            if(data.length === 0) {
+                tabla.innerHTML = '<tr><td colspan="6" style="color:#b0aaa6; text-align:center;">No hay adeudos pendientes registrados.</td></tr>';
+                return;
+            }
+            data.forEach(a => {
+                tabla.innerHTML += `<tr>
+                    <td style="font-weight: 500; color: #8c8581;"># ${a.id_adeudo}</td>
+                    <td style="font-weight:600; color: #4a403a;">${a.cliente}</td>
+                    <td style="color: #615c58;">${a.fecha_limite}</td>
+                    <td style="color:#e57373; font-weight:700;">$ ${a.monto_pendiente.toFixed(2)}</td>
+                    <td><span style="background:#e8e5e2; padding:4px 10px; border-radius:6px; font-size:12px; font-weight:500; color:#5c534e;">${a.estado}</span></td>
+                    <td style="text-align: center;"><button class="btn-action" onclick="abrirPanelPago(${a.id_adeudo}, '${a.cliente}', ${a.monto_pendiente})">Abonar</button></td>
+                </tr>`;
+            });
+        })
+        .catch(err => console.error("Error cargando adeudos:", err));
 }
 
+function registrarAdeudo() {
+    let idCliente = document.getElementById("cliente").value;
+    let monto = parseFloat(document.getElementById("montoVenta").value);
 
-/* Seleccionar adeudo */
+    if (!idCliente) {
+        alert("Por favor, seleccione un cliente de la lista.");
+        return;
+    }
+    if (isNaN(monto) || monto <= 0) {
+        alert("Ingrese un monto de deuda válido.");
+        return;
+    }
 
-function seleccionarAdeudo(i){
+    let formData = new URLSearchParams();
+    formData.append("operacion", "nuevoAdeudo");
+    formData.append("idCliente", idCliente);
+    formData.append("monto", monto);
 
-adeudoSeleccionado=i;
-
-let a=adeudos[i];
-
-document.getElementById("detalleAdeudo").innerText=
-"Cliente: "+a.cliente+" | Saldo pendiente: $"+a.saldo;
-
-document.getElementById("pagoPanel").classList.remove("hidden");
-
+    fetch('/inicio_sesion/adeudos', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: formData.toString()
+    })
+    .then(res => res.text())
+    .then(respuesta => {
+        if (respuesta.trim() === "ok") {
+            alert("¡Adeudo registrado correctamente en la Base de Datos!");
+            document.getElementById("montoVenta").value = "";
+            cargarAdeudos();
+        } else {
+            alert("Error del servidor: " + respuesta);
+        }
+    })
+    .catch(err => alert("Error de conexión con el backend."));
 }
 
-
-/* Registrar pago */
-
-function registrarPago(){
-
-let pago=parseFloat(document.getElementById("montoPago").value);
-
-let adeudo=adeudos[adeudoSeleccionado];
-
-/* B.5 Pago mayor al adeudo */
-
-if(pago>adeudo.saldo){
-
-let opcion=confirm("El pago excede el adeudo. ¿Desea registrar el excedente como pago anticipado?");
-
-if(!opcion){
-return;
+function abrirPanelPago(idAdeudo, nombreCliente, saldo) {
+    document.getElementById("idAdeudoPago").value = idAdeudo;
+    document.getElementById("saldoActualPago").value = saldo;
+    
+    document.getElementById("detalleAdeudo").innerText = 
+        `Abonando a deuda # ${idAdeudo} de ${nombreCliente} | Deuda actual: $ ${saldo.toFixed(2)}`;
+    
+    document.getElementById("montoPago").value = saldo;
+    document.getElementById("pagoPanel").classList.remove("hidden");
 }
 
+function cerrarPanelPago() {
+    document.getElementById("pagoPanel").classList.add("hidden");
 }
 
-adeudo.saldo-=pago;
+function procesarPagoBD() {
+    let idAdeudo = document.getElementById("idAdeudoPago").value;
+    let saldoActual = parseFloat(document.getElementById("saldoActualPago").value);
+    let abono = parseFloat(document.getElementById("montoPago").value);
 
-/* registrar ingreso en caja (simulado) */
+    if (isNaN(abono) || abono <= 0) {
+        alert("Ingrese una cantidad de abono válida.");
+        return;
+    }
 
-if(adeudo.saldo<=0){
+    if (abono > saldoActual) {
+        let confirmar = confirm("El abono ingresado es mayor a la deuda. ¿Desea registrar el pago para liquidarla por completo?");
+        if (!confirmar) return;
+        abono = saldoActual;
+    }
 
-adeudo.estado="Pagado";
-adeudo.saldo=0;
+    let formData = new URLSearchParams();
+    formData.append("operacion", "pagarAdeudo");
+    formData.append("idAdeudo", idAdeudo);
+    formData.append("abono", abono);
 
+    fetch('/inicio_sesion/adeudos', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: formData.toString()
+    })
+    .then(res => res.text())
+    .then(respuesta => {
+        if (respuesta.trim() === "ok") {
+            alert("¡Abono registrado exitosamente!");
+            cerrarPanelPago();
+            cargarAdeudos();
+        } else {
+            alert("Error al procesar el pago: " + respuesta);
+        }
+    })
+    .catch(err => alert("Error de red al intentar pagar."));
 }
-
-mostrarAdeudos();
-
-document.getElementById("pagoPanel").classList.add("hidden");
-
-alert("Pago registrado.");
-
-}
-
 </script>
 
 </body>
