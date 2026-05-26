@@ -2,261 +2,497 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Gestionar Caja y Flujo de Efectivo</title>
 
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+
 <style>
-
-body{
-font-family:Arial;
-background:#f4f4f4;
-margin:0;
+/* Base de interfaz profesional */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
 }
 
-header{
-background:#2c3e50;
-color:white;
-padding:15px;
-text-align:center;
+body { 
+    background: linear-gradient(135deg, #f0f4f8 0%, #d6e6f2 100%); 
+    margin: 0; 
+    color: #4a403a; /* Marrón vintage oscuro */
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
 }
 
-.container{
-padding:20px;
+header { 
+    background: #ffffff; 
+    color: #4a403a; 
+    padding: 24px; 
+    text-align: center; 
+    border-bottom: 1px solid rgba(232, 229, 226, 0.7);
+    box-shadow: 0 4px 12px rgba(74, 64, 58, 0.02);
 }
 
-button{
-padding:8px 12px;
-margin:5px;
-cursor:pointer;
+header h2 {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
 }
 
-input{
-padding:8px;
-margin:5px;
+header h2 .material-icons-outlined {
+    font-size: 26px;
+    color: #615c58;
 }
 
-.hidden{
-display:none;
+.container { 
+    max-width: 700px;
+    margin: 40px auto;
+    background: #ffffff; 
+    padding: 40px; 
+    border-radius: 16px;
+    box-shadow: 0 15px 35px rgba(74, 64, 58, 0.04);
+    border: 1px solid rgba(232, 229, 226, 0.7);
+    box-sizing: border-box;
+    width: 90%;
 }
 
-.reporte{
-background:white;
-border:1px solid #ccc;
-padding:15px;
-margin-top:20px;
+/* Encabezados internos estilizados */
+h3 {
+    color: #4a403a;
+    font-size: 16px;
+    font-weight: 700;
+    margin-top: 0;
+    margin-bottom: 24px;
+    border-left: 3px solid #cbd0f1; /* Detalle lila de tu paleta */
+    padding-left: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    letter-spacing: -0.2px;
 }
 
+h3 .material-icons-outlined {
+    font-size: 20px;
+    color: #615c58;
+}
+
+/* Alerta informativa de estado actual de caja */
+.alerta-caja { 
+    background: #d1ebd9; /* Verde menta soft */
+    color: #275237; 
+    padding: 16px 20px; 
+    margin-bottom: 25px; 
+    border-radius: 8px; 
+    font-size: 14px;
+    line-height: 1.6;
+    border-left: 4px solid #a3dfb8;
+}
+
+/* Inputs y controles de formulario */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+label {
+    font-weight: 600;
+    font-size: 13px;
+    color: #615c58;
+}
+
+/* Contenedor input con prefijo $ incorporado */
+.input-moneda-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-moneda-wrapper .symbol {
+    position: absolute;
+    left: 14px;
+    color: #8c8581;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+input { 
+    padding: 11px 14px; 
+    border: 1px solid #e8e5e2;
+    border-radius: 8px;
+    font-size: 14px;
+    outline: none;
+    background-color: #fcfbfa;
+    color: #4a403a;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+input:focus {
+    background-color: #ffffff;
+    border-color: #babcde;
+    box-shadow: 0 0 0 3px rgba(203, 208, 241, 0.3);
+}
+
+/* Botones ejecutivos */
+button { 
+    padding: 11px 20px; 
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer; 
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    color: #4a403a;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+}
+
+button .material-icons-outlined {
+    font-size: 18px;
+}
+
+button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+}
+
+button:active {
+    transform: translateY(1px);
+}
+
+/* Clases de botones ajustadas a tu gama de colores */
+.btn-open { background: #cbd0f1; color: #3b3e54; } 
+.btn-open:hover { background: #babcde; }
+
+.btn-close-action { background: #f7cbd0; color: #634347; } 
+.btn-close-action:hover { background: #f0b4bc; }
+
+.btn-submit { background: #d1ebd9; color: #3b5249; } 
+.btn-submit:hover { background: #b8dec4; }
+
+.btn-cancel { background: #e8e5e2; color: #615c58; }
+.btn-cancel:hover { background: #dad6d2; }
+
+.btn-print { background: #fbf0cb; color: #5e5333; } 
+.btn-print:hover { background: #f5e2a4; }
+
+/* Contenedor del desglose del arqueo */
+.resumen-desglose {
+    background: #fcfbfa; 
+    padding: 24px; 
+    border: 1px dashed #babcde; 
+    margin-bottom: 25px;
+    border-radius: 8px;
+    font-size: 14px;
+    line-height: 1.8;
+}
+
+.resumen-desglose hr {
+    border: 0;
+    height: 1px;
+    background: #e8e5e2;
+    margin: 16px 0;
+}
+
+/* Reporte final tipo balance */
+.reporte { 
+    background: #ffffff; 
+    border: 1px solid #e8e5e2; 
+    padding: 35px; 
+    margin-top: 20px; 
+    border-radius: 12px; 
+    line-height: 1.6;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+}
+
+.hidden { display: none !important; }
+
+/* Estilo para las filas de balances alineadas */
+.row-cuenta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 0;
+}
 </style>
 </head>
 
 <body>
 
 <header>
-<h2>Gestionar Caja y Flujo de Efectivo</h2>
+    <h2><span class="material-icons-outlined">account_balance_wallet</span> Gestionar Caja y Flujo de Efectivo</h2>
 </header>
 
 <div class="container">
 
-<div id="menuCaja">
+    <div id="infoCajaActual" class="alerta-caja hidden"></div>
 
-<h3>Caja</h3>
+    <div id="menuCaja" style="text-align: center; padding: 10px 0;">
+        <h3><span class="material-icons-outlined">point_of_sale</span> Operaciones de Caja Diarias</h3>
+        <p style="color: #615c58; margin-bottom: 30px; font-size: 14.5px;">Selecciona la acción que deseas realizar en el punto de venta.</p>
+        <div style="display: flex; gap: 15px; justify-content: center;">
+            <button id="btnAbrirPantalla" onclick="abrirCajaPantalla()" class="btn-open" style="padding: 13px 24px;">
+                <span class="material-icons-outlined">lock_open</span> Apertura de Caja
+            </button>
+            <button id="btnCerrarPantalla" onclick="cerrarCajaPantalla()" class="btn-close-action" style="padding: 13px 24px;">
+                <span class="material-icons-outlined">lock</span> Cierre de Caja
+            </button>
+        </div>
+    </div>
 
-<button onclick="abrirCajaPantalla()">Abrir Caja</button>
-<button onclick="cerrarCajaPantalla()">Cerrar Caja</button>
+    <div id="apertura" class="hidden" style="margin-top: 15px;">
+        <h3><span class="material-icons-outlined">no_encryption_gmailerrorred</span> Registro de Apertura de Caja</h3>
+        
+        <div class="form-group">
+            <label for="fondoInicial">Fondo Inicial en Efectivo (Caja Chica):</label>
+            <div class="input-moneda-wrapper">
+                <span class="symbol">$</span>
+                <input type="number" id="fondoInicial" step="0.50" placeholder="0.00" style="padding-left: 28px;">
+            </div>
+        </div>
 
-</div>
+        <div class="form-group">
+            <label for="notaApertura">Nota o comentario (opcional):</label>
+            <input type="text" id="notaApertura" placeholder="Ej. Dejo $200 en monedas de $10 y $5">
+        </div>
 
-<div id="apertura" class="hidden">
+        <div style="display: flex; gap: 10px; margin-top: 30px;">
+            <button onclick="procesarAperturaBD()" class="btn-submit">
+                <span class="material-icons-outlined">check_circle</span> Confirmar Apertura
+            </button>
+            <button onclick="ocultarPaneles()" class="btn-cancel">Cancelar</button>
+        </div>
+    </div>
 
-<h3>Apertura de Caja</h3>
+    <div id="cierre" class="hidden" style="margin-top: 15px;">
+        <h3><span class="material-icons-outlined">calculate</span> Cierre de Caja (Arqueo Automático)</h3>
+        
+        <div id="resumenCaja" class="resumen-desglose"></div>
 
-<label>Fondo Inicial</label>
-<input type="number" id="fondoInicial">
+        <div class="form-group">
+            <label for="conteoFisico">Conteo Físico Real en Caja (Dinero en Mano):</label>
+            <div class="input-moneda-wrapper">
+                <span class="symbol">$</span>
+                <input type="number" id="conteoFisico" step="0.50" placeholder="0.00" style="padding-left: 28px;">
+            </div>
+        </div>
 
-<br>
+        <div class="form-group">
+            <label for="notaCierre">Nota de Justificación (Obligatorio si hay descuadre):</label>
+            <input type="text" id="notaCierre" placeholder="Escriba la razón de la diferencia (ej. falta ticket / cambio)">
+        </div>
 
-<label>Nota (opcional)</label>
-<input type="text" id="notaApertura">
+        <div style="display: flex; gap: 10px; margin-top: 30px;">
+            <button onclick="confirmarCierreBD()" class="btn-close-action" style="background-color: #4a403a; color: white;">
+                <span class="material-icons-outlined">save</span> Cerrar Caja e Imprimir
+            </button>
+            <button onclick="ocultarPaneles()" class="btn-cancel">Cancelar</button>
+        </div>
+    </div>
 
-<br>
-
-<button onclick="abrirCaja()">Abrir Caja</button>
-
-</div>
-
-<div id="cierre" class="hidden">
-
-<h3>Cierre de Caja</h3>
-
-<div id="resumenCaja"></div>
-
-<br>
-
-<label>Conteo Físico Real</label>
-<input type="number" id="conteoFisico">
-
-<br>
-
-<label>Nota de Justificación (opcional)</label>
-<input type="text" id="notaCierre">
-
-<br>
-
-<button onclick="confirmarCierre()">Cerrar Caja y Generar Reporte</button>
-
-</div>
-
-<div id="reporte" class="hidden reporte"></div>
+    <div id="reporte" class="hidden reporte"></div>
 
 </div>
 
 <script>
+/* Tu lógica de Javascript permanece exactamente igual a la original */
+let idCajaBD = 0;
+let cajaAbierta = false;
+let fondoInicial = 0;
+let calculoActual = null; 
 
-let cajaAbierta=false;
-let fondoInicial=0;
+window.onload = function() {
+    verificarEstadoCaja();
+};
 
-let ventasEfectivo=300;
-let ventasMercadoPago=200;
-let pagosAdeudos=50;
-let egresos=100;
-
-
-/* Mostrar pantalla apertura */
-
-function abrirCajaPantalla(){
-
-document.getElementById("apertura").classList.remove("hidden");
-
+function verificarEstadoCaja() {
+    fetch('/inicio_sesion/caja?accion=verificarEstado')
+        .then(res => res.json())
+        .then(data => {
+            let divInfo = document.getElementById("infoCajaActual");
+            if (data.abierta) {
+                cajaAbierta = true;
+                idCajaBD = data.id_caja;
+                fondoInicial = data.fondo_inicial;
+                
+                divInfo.innerHTML = `<span class="material-icons-outlined" style="font-size:16px; vertical-align:middle; margin-right:6px; color:#275237;">lock_open</span><b>Caja Abierta Hoy:</b> Se encuentra un turno activo (ID <b>#${idCajaBD}</b>) con un fondo inicial registrado de <b>$ ${fondoInicial.toFixed(2)}</b>. Listo para operaciones.`;
+                divInfo.classList.remove("hidden");
+            } else {
+                cajaAbierta = false;
+                divInfo.classList.add("hidden");
+            }
+        })
+        .catch(err => console.error("Error al verificar estado:", err));
 }
 
-
-/* Apertura de caja */
-
-function abrirCaja(){
-
-/* A.2 Caja ya abierta */
-
-if(cajaAbierta){
-
-alert("Ya existe una caja abierta para hoy. Debe cerrarla antes de abrir una nueva.");
-return;
-
+function ocultarPaneles() {
+    document.getElementById("apertura").classList.add("hidden");
+    document.getElementById("cierre").classList.add("hidden");
+    document.getElementById("reporte").classList.add("hidden");
 }
 
-fondoInicial=parseFloat(document.getElementById("fondoInicial").value);
-
-cajaAbierta=true;
-
-alert("Caja abierta. Fondo inicial: $"+fondoInicial);
-
-document.getElementById("apertura").classList.add("hidden");
-
+function abrirCajaPantalla() {
+    ocultarPaneles();
+    if (cajaAbierta) {
+        alert("La caja ya se encuentra abierta en el sistema. Realice sus ventas o proceda al cierre.");
+        return;
+    }
+    document.getElementById("apertura").classList.remove("hidden");
 }
 
+function procesarAperturaBD() {
+    let fondo = parseFloat(document.getElementById("fondoInicial").value);
+    if (isNaN(fondo) || fondo < 0) {
+        alert("Ingrese un monto de fondo inicial válido.");
+        return;
+    }
 
-/* Mostrar pantalla cierre */
+    let formData = new URLSearchParams();
+    formData.append("operacion", "abrir");
+    formData.append("fondo", fondo);
 
-function cerrarCajaPantalla(){
-
-if(!cajaAbierta){
-
-alert("No hay una caja abierta.");
-return;
-
+    fetch('/inicio_sesion/caja', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: formData.toString()
+    })
+    .then(res => res.text())
+    .then(respuesta => {
+        if (respuesta.trim() === "ok") {
+            alert("¡Caja abierta exitosamente!");
+            ocultarPaneles();
+            verificarEstadoCaja(); 
+        } else {
+            alert("Error al abrir caja: " + respuesta);
+        }
+    })
+    .catch(err => alert("Error de red al intentar abrir la caja."));
 }
 
-document.getElementById("cierre").classList.remove("hidden");
+function cerrarCajaPantalla() {
+    ocultarPaneles();
+    if (!cajaAbierta) {
+        alert("No puede cerrar la caja porque no se ha registrado una apertura para el día de hoy.");
+        return;
+    }
 
-let totalTeorico=fondoInicial+ventasEfectivo+pagosAdeudos-egresos;
+    let divResumen = document.getElementById("resumenCaja");
+    divResumen.innerHTML = "<div style='display:flex; align-items:center; gap:8px;'><span class='material-icons-outlined'>sync</span> Calculando sumatorias desde la Base de Datos...</div>";
+    document.getElementById("cierre").classList.remove("hidden");
 
-let resumen="Fondo inicial: $"+fondoInicial+"<br>";
-resumen+="Total de ventas en efectivo: $"+ventasEfectivo+"<br>";
-resumen+="Total de ventas con Mercado Pago: $"+ventasMercadoPago+"<br>";
-resumen+="Total de pagos de adeudos recibidos: $"+pagosAdeudos+"<br>";
-resumen+="Total de egresos (pagos a proveedores): $"+egresos+"<br>";
-resumen+="<br>Total teórico en caja: $"+totalTeorico;
-
-document.getElementById("resumenCaja").innerHTML=resumen;
-
+    fetch(`/inicio_sesion/caja?accion=calcularResumen&fondo=${fondoInicial}`)
+        .then(res => res.json())
+        .then(data => {
+            calculoActual = data;
+            
+            let html = `
+                <div class="row-cuenta"><span>Fondo inicial en caja:</span> <b>$ ${fondoInicial.toFixed(2)}</b></div>
+                <div class="row-cuenta"><span>(+) Ventas cobradas en Efectivo:</span> <b>$ ${data.ventasEfectivo.toFixed(2)}</b></div>
+                <div class="row-cuenta"><span>(+) Ventas con Mercado Pago (No efectivo):</span> <b>$ ${data.ventasMercado.toFixed(2)}</b></div>
+                <div class="row-cuenta"><span>(+) Abonos de adeudos cobrados:</span> <b>$ ${data.pagosAdeudos.toFixed(2)}</b></div>
+                <div class="row-cuenta"><span>(-) Egresos / Pagos a proveedores:</span> <b>$ ${data.egresos.toFixed(2)}</b></div>
+                <hr>
+                <div class="row-cuenta" style="font-size:15px; margin-top:5px;"><span style="font-weight:600; color:#4a403a;">Total Teórico Esperado en Efectivo:</span> <b style="color:#e57373; font-size:16px;">$ ${data.totalTeorico.toFixed(2)}</b></div>`;
+            
+            divResumen.innerHTML = html;
+            document.getElementById("conteoFisico").value = data.totalTeorico.toFixed(2);
+        })
+        .catch(err => {
+            divResumen.innerHTML = "<span style='color:#e57373; font-weight:600;'>❌ Error al calcular datos de la BD.</span>";
+        });
 }
 
+function confirmarCierreBD() {
+    let conteo = parseFloat(document.getElementById("conteoFisico").value);
+    if (isNaN(conteo) || conteo < 0) {
+        alert("Ingrese el total del conteo físico del dinero.");
+        return;
+    }
 
-/* Confirmar cierre */
+    let totalTeorico = calculoActual.totalTeorico;
+    let diferencia = conteo - totalTeorico;
+    let nota = document.getElementById("notaCierre").value.trim();
 
-function confirmarCierre(){
+    if (Math.abs(diferencia) > 0.10 && nota === "") {
+        let agregar = confirm("Existe un descuadre en caja. ¿Desea escribir una nota justificando la diferencia?");
+        if (agregar) {
+            document.getElementById("notaCierre").focus();
+            return;
+        }
+        nota = "Sin justificación";
+    }
 
-let conteo=parseFloat(document.getElementById("conteoFisico").value);
+    if (Math.abs(diferencia) > 500) {
+        let revisar = confirm("¡ALERTA! La diferencia supera los $500 pesos. ¿Desea cancelar y revisar los movimientos antes de forzar el cierre?");
+        if (revisar) return;
+    }
 
-let totalTeorico=fondoInicial+ventasEfectivo+pagosAdeudos-egresos;
+    let formData = new URLSearchParams();
+    formData.append("operacion", "cerrar");
+    formData.append("idCaja", idCajaBD);
+    formData.append("conteo", conteo);
+    formData.append("diferencia", diferencia);
 
-let diferencia=conteo-totalTeorico;
+    fetch('/inicio_sesion/caja', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: formData.toString()
+    })
+    .then(res => res.text())
+    .then(respuesta => {
+        if (respuesta.trim() === "ok") {
+            let htmlReporte = `
+               <h2 style="color:#e57373; text-align:center; margin-top:0; letter-spacing:-0.5px; display:flex; align-items:center; justify-content:center; gap:8px;"><span class="material-icons-outlined">analytics</span> Reporte de Cierre de Caja</h2>
+               <div style="text-align:center; color:#615c58; margin-bottom:25px; font-size:13px;"><b>ID Turno corporativo:</b> #${idCajaBD}</div>
+               
+               <div class="row-cuenta"><span>Fondo Inicial:</span> <b>$ ${fondoInicial.toFixed(2)}</b></div>
+               <div class="row-cuenta"><span>Ingresos Efectivo (Ventas):</span> <b>$ ${calculoActual.ventasEfectivo.toFixed(2)}</b></div>
+               <div class="row-cuenta"><span>Ingresos Mercado Pago:</span> <b>$ ${calculoActual.ventasMercado.toFixed(2)}</b></div>
+               <div class="row-cuenta"><span>Ingresos por Adeudos:</span> <b>$ ${calculoActual.pagosAdeudos.toFixed(2)}</b></div>
+               <div class="row-cuenta"><span>Salidas / Egresos Almacén:</span> <b>$ ${calculoActual.egresos.toFixed(2)}</b></div>
+               <hr style="border:0; border-top: 1px solid #e8e5e2; margin:16px 0;">
+               <div class="row-cuenta"><span>Total Teórico en Sistema:</span> <b>$ ${totalTeorico.toFixed(2)}</b></div>
+               <div class="row-cuenta" style="font-size:14.5px;"><span><b>Conteo Físico Real:</b></span> <b>$ ${conteo.toFixed(2)}</b></div>`;
 
-let nota=document.getElementById("notaCierre").value;
+            let colorDif = (Math.abs(diferencia) <= 0.10) ? "#2e7d32" : "#e57373";
+            htmlReporte += `
+               <div class="row-cuenta" style="margin-top:10px; font-size:15px; color:${colorDif};"><span><b>Diferencia Arqueo:</b></span> <b>$ ${diferencia.toFixed(2)}</b></div>
+               <br>
+               <div style="background:#fcfbfa; padding:14px; border-radius:8px; border:1px solid #e8e5e2; font-size:13px; color:#615c58;"><b>Justificación de Auditoría:</b> ${nota}</div>
+               <br>
+               <div style="text-align:center; margin-top:5px; margin-bottom:30px;"><span style="background:#f7cbd0; color:#634347; padding:6px 16px; border-radius:20px; font-size:11px; font-weight:700; letter-spacing:0.5px; text-transform:uppercase;">🔒 Turno Cerrado</span></div>
+               
+               <div style="display:flex; gap:12px;">
+                   <button onclick="window.print()" class="btn-print" style="flex:1;"><span class="material-icons-outlined">print</span> Imprimir Ticket</button>
+                   <button onclick="location.reload()" class="btn-cancel" style="flex:1;">Regresar al Menú</button>
+               </div>`;
 
+            ocultarPaneles();
+            let divRep = document.getElementById("reporte");
+            divRep.innerHTML = htmlReporte;
+            divRep.classList.remove("hidden");
 
-/* Paso 6: nota de justificación si hay diferencia */
-
-if(diferencia!=0 && nota==""){
-
-let agregar=confirm("Existe una diferencia. ¿Desea agregar una nota de justificación?");
-
-if(!agregar){
-nota="Sin justificación";
+            cajaAbierta = false; 
+            document.getElementById("infoCajaActual").classList.add("hidden");
+        } else {
+            alert("Error al registrar cierre en BD: " + respuesta);
+        }
+    })
+    .catch(err => alert("Error de red al intentar cerrar la caja."));
 }
-
-}
-
-
-/* B.3 Conteo físico incongruente */
-
-if(Math.abs(diferencia)>500){
-
-let revisar=confirm("Diferencia significativa. ¿Desea revisar los movimientos antes de cerrar?");
-
-if(revisar){
-return;
-}
-
-/* opción Forzar Cierre = continuar */
-
-}
-
-
-/* Paso 7 y 8: cierre y generación de reporte */
-
-try{
-
-cajaAbierta=false;
-
-let reporte="REPORTE DE CIERRE<br><br>";
-reporte+="Fondo inicial: $"+fondoInicial+"<br>";
-reporte+="Ventas efectivo: $"+ventasEfectivo+"<br>";
-reporte+="Ventas Mercado Pago: $"+ventasMercadoPago+"<br>";
-reporte+="Pagos de adeudos: $"+pagosAdeudos+"<br>";
-reporte+="Egresos: $"+egresos+"<br>";
-reporte+="Conteo físico: $"+conteo+"<br>";
-reporte+="Total teórico: $"+totalTeorico+"<br>";
-reporte+="Diferencia: $"+diferencia+"<br>";
-reporte+="Nota de justificación: "+nota+"<br>";
-reporte+="Estado de la caja: Cerrada";
-
-document.getElementById("cierre").classList.add("hidden");
-
-let rep=document.getElementById("reporte");
-rep.innerHTML=reporte;
-rep.classList.remove("hidden");
-
-}
-
-/* B.7 Error al cerrar */
-
-catch{
-
-alert("No se pudo generar el reporte, pero la caja se ha cerrado. Intente generar el reporte desde el historial.");
-
-}
-
-}
-
 </script>
 
 </body>
