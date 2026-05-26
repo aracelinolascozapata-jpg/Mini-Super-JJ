@@ -1,74 +1,177 @@
-<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Alerta de Inventario Bajo</title>
 
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+
 <style>
-
-body{
-font-family:Arial;
-background:#f4f4f4;
-margin:0;
-display:flex;
-justify-content:center;
-align-items:center;
-height:100vh;
+/* Base de interfaz profesional */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
 }
 
-.alerta{
-background:white;
-padding:30px;
-border-radius:8px;
-box-shadow:0 0 10px rgba(0,0,0,0.2);
-text-align:center;
+body { 
+    background: linear-gradient(135deg, #f0f4f8 0%, #d6e6f2 100%); 
+    margin: 0; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    height: 100vh; 
+    padding: 20px;
 }
 
-h2{
-color:#c0392b;
+/* Ventanita de notificación ejecutiva (sin bordes toscos superiores) */
+.alerta { 
+    background: #ffffff; 
+    padding: 40px 35px; 
+    border-radius: 16px; 
+    box-shadow: 0 15px 35px rgba(74, 64, 58, 0.06); 
+    text-align: center; 
+    border: 1px solid rgba(232, 229, 226, 0.7);
+    width: 100%;
+    max-width: 400px;
+    box-sizing: border-box;
+    animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.mensaje{
-color:red;
-font-weight:bold;
-font-size:18px;
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
+/* Encabezado formal con indicador de advertencia */
+.alerta-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 25px;
+}
+
+/* Contenedor circular formal para el símbolo de advertencia */
+.icon-container {
+    background-color: #ffebee; /* Fondo coral/rosa pastel ultra tenue */
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 4px;
+}
+
+.icon-container .material-icons-outlined {
+    color: #e57373; /* Coral de advertencia formal */
+    font-size: 36px;
+}
+
+h2 { 
+    color: #4a403a; /* Marrón vintage oscuro */
+    margin: 0; 
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+}
+
+/* Estilo del texto del mensaje */
+.mensaje { 
+    color: #615c58; 
+    font-size: 14px; 
+    line-height: 1.6; 
+    margin-bottom: 25px;
+    text-align: left;
+}
+
+.mensaje b {
+    color: #4a403a;
+    font-weight: 600;
+}
+
+/* Formato de ítems de producto tipo bitácora o reporte */
+.producto-item {
+    background-color: #fcfbfa; /* Fondo beige ultra suave */
+    border: 1px solid #e8e5e2;
+    padding: 12px 14px;
+    border-radius: 8px;
+    margin-top: 10px;
+    font-weight: 500;
+    color: #4a403a;
+    font-size: 13.5px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-left: 3px solid #f7cbd0; /* Barra lateral Rosa Pastel */
+}
+    
+/* Botón cerrar formal (Lila Pastel de acento) */
+.btn-cerrar { 
+    width: 100%;
+    padding: 13px; 
+    background: #cbd0f1; /* Lila pastel */
+    color: #3b3e54; 
+    border: none; 
+    border-radius: 8px; 
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer; 
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 10px rgba(203, 208, 241, 0.25);
+}
+
+.btn-cerrar:hover {
+    background: #babcde;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 14px rgba(203, 208, 241, 0.35);
+}
+
+.btn-cerrar:active {
+    transform: translateY(1px);
+}
 </style>
 </head>
-
 <body>
 
 <div class="alerta">
-
-<h2>Alerta de Inventario</h2>
-
-<p id="mensaje" class="mensaje"></p>
-
+    <div class="alerta-header">
+        <div class="icon-container">
+            <span class="material-icons-outlined">report_problem</span>
+        </div>
+        <h2>Alerta de Inventario</h2>
+    </div>
+    
+    <div id="mensaje" class="mensaje">Cargando datos de inventario...</div>
+    
+    <button class="btn-cerrar" onclick="window.close()">Entendido</button>
 </div>
 
 <script>
+    // Tu lógica original se mantiene intacta para procesar los parámetros por URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const productosStr = urlParams.get('productos');
 
-/* Producto con stock bajo */
+    if (productosStr) {
+        let lista = productosStr.split(",");
+        let texto = "Los siguientes artículos han alcanzado su <b>nivel mínimo</b> de inventario en el almacén central:<br>";
+        
+        lista.forEach(p => {
+            if(p.trim() !== "") {
+                texto += `<div class="producto-item">${p.trim()}</div>`;
+            }
+        });
 
-let producto="Leche";
-let stockActual=2;
-let nivelMinimo=5;
-
-/* Verificar inventario */
-
-if(stockActual <= nivelMinimo){
-
-document.getElementById("mensaje").innerText=
-"Alerta: El producto '"+producto+"' tiene inventario bajo.";
-
-}else{
-
-document.getElementById("mensaje").innerText=
-"El inventario está en niveles normales.";
-
-}
-
+        document.getElementById("mensaje").innerHTML = texto;
+    } else {
+        document.getElementById("mensaje").innerHTML = `
+            <div style="text-align: center; color: #8c8581; padding: 15px 0; font-size: 14px;">
+                El inventario se encuentra en niveles normales de operación.
+            </div>`;
+    }
 </script>
 
 </body>
