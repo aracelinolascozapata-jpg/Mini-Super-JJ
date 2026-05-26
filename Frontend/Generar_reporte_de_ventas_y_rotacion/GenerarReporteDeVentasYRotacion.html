@@ -2,246 +2,385 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Generar Reporte de Ventas y Rotación</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reporte de Ventas y Rotación de Mercancía</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
 
 <style>
-
-body{
-font-family:Arial;
-background:#f4f4f4;
-margin:0;
+/* Base de interfaz unificada */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
 }
 
-header{
-background:#27ae60;
-color:white;
-padding:15px;
-text-align:center;
+body { 
+    background: linear-gradient(135deg, #f0f4f8 0%, #d6e6f2 100%); 
+    margin: 0; 
+    padding: 40px 20px;
+    color: #4a403a; /* Marrón vintage oscuro */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
 }
 
-.container{
-padding:20px;
+.container {
+    width: 100%;
+    max-width: 950px;
+    background: #ffffff; 
+    padding: 40px; 
+    border-radius: 16px;
+    box-shadow: 0 15px 35px rgba(74, 64, 58, 0.04);
+    border: 1px solid rgba(232, 229, 226, 0.7);
+    box-sizing: border-box;
 }
 
-table{
-width:100%;
-border-collapse:collapse;
-background:white;
-margin-top:20px;
+/* Encabezado */
+h2 { 
+    text-align: center; 
+    color: #4a403a;
+    font-size: 24px;
+    margin-bottom: 30px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
 }
 
-th,td{
-border:1px solid #ccc;
-padding:10px;
-text-align:center;
+h2 .material-icons-outlined {
+    font-size: 28px;
+    color: #3c4b54;
 }
 
-th{
-background:#eee;
+/* Sección de Filtros de Consulta */
+.filtros-panel {
+    background: #fcfbfa;
+    padding: 20px 25px;
+    border-radius: 12px;
+    border: 1px solid #e8e5e2;
+    margin-bottom: 30px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    align-items: flex-end;
 }
 
-button{
-padding:8px 12px;
-margin:5px;
-cursor:pointer;
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }
 
-.hidden{
-display:none;
+label {
+    font-weight: 600;
+    font-size: 13px;
+    color: #615c58;
 }
 
-.mensaje{
-color:red;
-font-weight:bold;
-margin-top:10px;
+input[type="date"], select { 
+    padding: 11px 14px; 
+    border: 1px solid #e8e5e2;
+    border-radius: 8px;
+    font-size: 14px;
+    outline: none;
+    background-color: #ffffff;
+    color: #4a403a;
+    transition: all 0.2s ease;
+    width: 100%;
 }
 
+input:focus, select:focus {
+    border-color: #a2c5db;
+    box-shadow: 0 0 0 3px rgba(185, 215, 234, 0.4);
+}
+
+/* Tarjetas de Resumen Ejecutivo */
+.kpi-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.kpi-card {
+    background: #ffffff;
+    border: 1px solid rgba(232, 229, 226, 0.8);
+    padding: 20px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.01);
+}
+
+.kpi-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.kpi-data h4 {
+    font-size: 12px;
+    color: #615c58;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.kpi-data p {
+    font-size: 20px;
+    font-weight: 700;
+    color: #4a403a;
+    margin-top: 2px;
+}
+
+/* Colores específicos de KPIs */
+.kpi-ventas .kpi-icon { background: rgba(209, 235, 217, 0.4); color: #3b5249; }
+.kpi-tickets .kpi-icon { background: rgba(185, 215, 234, 0.4); color: #3c4b54; }
+.kpi-critico .kpi-icon { background: rgba(247, 203, 208, 0.4); color: #634347; }
+
+/* Botones */
+button { 
+    padding: 12px 20px; 
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer; 
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    color: #3c4b54;
+    background: #b9d7ea; /* Celeste pastel para reportes */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+}
+
+button:hover {
+    background: #a2c5db;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+}
+
+/* Tablas de Reporte */
+.table-wrapper {
+    overflow-x: auto;
+    border-radius: 12px;
+    border: 1px solid #e8e5e2;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.01);
+}
+
+table { 
+    width: 100%; 
+    border-collapse: collapse; 
+    background: #ffffff;
+    font-size: 14px;
+}
+
+th, td { 
+    padding: 14px 18px; 
+    text-align: left; 
+    border-bottom: 1px solid #e8e5e2;
+}
+
+th { 
+    background: #e8e5e2; /* Gris Tierra suave */
+    color: #5c534e;
+    font-weight: 600;
+}
+
+tr:last-child td {
+    border-bottom: none;
+}
+
+tr:hover {
+    background-color: #fcfbfa;
+}
+
+/* Insignias de Rotación (Badges) */
+.badge {
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 700;
+}
+.badge-alta { background: #d1ebd9; color: #3b5249; }
+.badge-media { background: #fbf0cb; color: #5e5333; }
+.badge-baja { background: #f7cbd0; color: #634347; }
+
+/* Mensajes y estados */
+.mensaje { 
+    margin-top: 15px;
+    font-size: 13.5px; 
+    font-weight: 600; 
+    color: #d97706;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    justify-content: center;
+}
 </style>
 </head>
 
 <body>
 
-<header>
-<h2>Generar Reporte de Ventas y Rotación</h2>
-</header>
-
 <div class="container">
 
-<h3>Tipo de Reporte</h3>
+    <h2><span class="material-icons-outlined">analytics</span> Reporte de Ventas y Rotación</h2>
 
-<select id="tipoReporte">
-<option>Ventas por Período</option>
-<option>Top Productos</option>
-<option>Rotación de Inventario</option>
-<option>Comparativa de Ingresos</option>
-</select>
+    <div class="filtros-panel">
+        <div class="form-group">
+            <label for="fechaInicio">Fecha Inicial:</label>
+            <input type="date" id="fechaInicio">
+        </div>
+        <div class="form-group">
+            <label for="fechaFin">Fecha Final:</label>
+            <input type="date" id="fechaFin">
+        </div>
+        <div class="form-group">
+            <label for="criterioRotacion">Filtrar por Rotación:</label>
+            <select id="criterioRotacion">
+                <option value="TODOS">Todos los artículos</option>
+                <option value="ALTA">Alta Rotación (Más vendidos)</option>
+                <option value="MEDIA">Rotación Regular</option>
+                <option value="BAJA">Baja Rotación (Estancados)</option>
+            </select>
+        </div>
+        <div>
+            <button onclick="generarReporte()" style="width: 100%;">
+                <span class="material-icons-outlined">query_stats</span> Generar Reporte
+            </button>
+        </div>
+    </div>
 
-<hr>
+    <div class="kpi-container">
+        <div class="kpi-card kpi-ventas">
+            <div class="kpi-icon"><span class="material-icons-outlined">payments</span></div>
+            <div class="kpi-data">
+                <h4>Total Ingresos</h4>
+                <p id="kpiTotal">$0.00</p>
+            </div>
+        </div>
+        <div class="kpi-card kpi-tickets">
+            <div class="kpi-icon"><span class="material-icons-outlined">confirmation_number</span></div>
+            <div class="kpi-data">
+                <h4>Ventas Realizadas</h4>
+                <p id="kpiTickets">0</p>
+            </div>
+        </div>
+        <div class="kpi-card kpi-critico">
+            <div class="kpi-icon"><span class="material-icons-outlined">report_problem</span></div>
+            <div class="kpi-data">
+                <h4>Sin Movimiento</h4>
+                <p id="kpiCriticos">0</p>
+            </div>
+        </div>
+    </div>
 
-<h3>Filtros</h3>
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>Código / Artículo</th>
+                    <th style="text-align: right;">Cantidad Vendida</th>
+                    <th style="text-align: right;">Total Recaudado</th>
+                    <th style="text-align: center; width: 150px;">Índice Rotación</th>
+                </tr>
+            </thead>
+            <tbody id="tablaReporte">
+                <tr>
+                    <td colspan="4" style="text-align: center; color: #8c8581; padding: 25px;">
+                        Selecciona un rango de fechas para procesar el análisis de inventario.
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 
-<label>Desde</label>
-<input type="date" id="fechaDesde">
-
-<label>Hasta</label>
-<input type="date" id="fechaHasta">
-
-<label>Categoría</label>
-<input type="text" id="categoria">
-
-<label>Método de Pago</label>
-<input type="text" id="metodoPago">
-
-<br><br>
-
-<button onclick="generarReporte()">Generar Reporte</button>
-
-<p id="mensaje" class="mensaje hidden"></p>
-
-<div id="resultado" class="hidden">
-
-<h3>Resultados</h3>
-
-<p id="metricas"></p>
-
-<table>
-
-<thead>
-<tr>
-<th>Producto</th>
-<th>Cantidad Vendida</th>
-<th>Total</th>
-</tr>
-</thead>
-
-<tbody id="tablaResultados"></tbody>
-
-</table>
-
-<br>
-
-<button onclick="exportarPDF()">Exportar a PDF</button>
-<button onclick="exportarExcel()">Exportar a Excel</button>
-<button onclick="window.print()">Imprimir</button>
-<button onclick="enviarCorreo()">Enviar por Correo</button>
-
-</div>
+    <p id="mensajeEstado" class="mensaje"></p>
 
 </div>
 
 <script>
+// Establecer fechas por defecto del mes actual al cargar la ventana
+window.onload = function() {
+    let fecha = new Date();
+    let yyyy = fecha.getFullYear();
+    let mm = String(fecha.getMonth() + 1).padStart(2, '0');
+    document.getElementById("fechaInicio").value = `${yyyy}-${mm}-01`;
+    
+    let dd = String(fecha.getDate()).padStart(2, '0');
+    document.getElementById("fechaFin").value = `${yyyy}-${mm}-${dd}`;
+};
 
-/* No hay ventas registradas para activar la excepción 6.1 */
+function generarReporte() {
+    let fInicio = document.getElementById("fechaInicio").value;
+    let fFin = document.getElementById("fechaFin").value;
+    let rotacion = document.getElementById("criterioRotacion").value;
+    let mensaje = document.getElementById("mensajeEstado");
+    
+    if (!fInicio || !fFin) {
+        alert("Por favor selecciona ambas fechas.");
+        return;
+    }
 
-let ventas=[];
+    mensaje.innerHTML = `<span class="material-icons-outlined" style="font-size:16px; vertical-align:middle; animation: spin 2s linear infinite;">sync</span> Consultando transacciones e inventario en Oracle...`;
 
-function generarReporte(){
+    // Parámetros formateados para enviar al Servlet de reportes
+    let params = `fechaInicio=${fInicio}&fechaFin=${fFin}&rotacion=${rotacion}`;
 
-let desde=document.getElementById("fechaDesde").value;
-let hasta=document.getElementById("fechaHasta").value;
+    fetch('/inicio_sesion/ReporteServlet', { // Cambia la ruta según tu estructura exacta del Servlet
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: params
+    })
+    .then(response => response.json())
+    .then(data => {
+        mensaje.innerHTML = "";
+        
+        // Actualizar KPIs Principales del objeto JSON recibido
+        document.getElementById("kpiTotal").innerText = `$${parseFloat(data.resumen.totalVendido).toFixed(2)}`;
+        document.getElementById("kpiTickets").innerText = data.resumen.totalTickets;
+        document.getElementById("kpiCriticos").innerText = data.resumen.productosEstancados;
+        
+        // Renderizar la tabla de artículos de forma dinámica
+        let tabla = document.getElementById("tablaReporte");
+        tabla.innerHTML = "";
+        
+        if (data.detalles.length === 0) {
+            tabla.innerHTML = `<tr><td colspan="4" style="text-align:center;">No se encontraron registros de ventas en este periodo.</td></tr>`;
+            return;
+        }
 
-let mensaje=document.getElementById("mensaje");
+        data.detalles.forEach(item => {
+            let badgeClass = "badge-media";
+            if (item.rotacion === "ALTA") badgeClass = "badge-alta";
+            if (item.rotacion === "BAJA") badgeClass = "badge-baja";
 
-mensaje.classList.add("hidden");
-
-/* 5.1 Filtros inválidos */
-
-if(desde!="" && hasta!="" && desde>hasta){
-
-mensaje.innerText="Rango de fechas inválido";
-mensaje.classList.remove("hidden");
-
-return;
-
+            let fila = `<tr>
+                <td style="font-weight: 500;">${item.nombreProducto}</td>
+                <td style="text-align: right;">${item.cantidad} unidades</td>
+                <td style="text-align: right; font-weight: 600; color: #3b5249;">$${parseFloat(item.total).toFixed(2)}</td>
+                <td style="text-align: center;"><span class="badge ${badgeClass}">${item.rotacion}</span></td>
+            </tr>`;
+            tabla.innerHTML += fila;
+        });
+    })
+    .catch(error => {
+        console.error("Error al procesar reporte:", error);
+        mensaje.style.color = "#e57373";
+        mensaje.innerHTML = `<span class="material-icons-outlined" style="font-size:16px; vertical-align:middle;">error_outline</span> Error al conectar con el servidor.`;
+    });
 }
-
-/* 6.1 Sin datos para los filtros */
-
-if(ventas.length==0){
-
-mensaje.innerText="No hay datos que coincidan con los criterios de búsqueda.";
-mensaje.classList.remove("hidden");
-
-return;
-
-}
-
-mostrarResultados();
-
-}
-
-function mostrarResultados(){
-
-let tabla=document.getElementById("tablaResultados");
-tabla.innerHTML="";
-
-let totalVentas=0;
-let topProducto="";
-
-let max=0;
-
-ventas.forEach(v=>{
-
-let fila="<tr>";
-fila+="<td>"+v.producto+"</td>";
-fila+="<td>"+v.cantidad+"</td>";
-fila+="<td>$"+v.total+"</td>";
-fila+="</tr>";
-
-tabla.innerHTML+=fila;
-
-totalVentas+=v.total;
-
-if(v.cantidad>max){
-max=v.cantidad;
-topProducto=v.producto;
-}
-
-});
-
-document.getElementById("metricas").innerText=
-"Ventas Totales: $"+totalVentas+" | Producto más vendido: "+topProducto;
-
-document.getElementById("resultado").classList.remove("hidden");
-
-}
-
-/* Exportaciones */
-
-function exportarPDF(){
-
-try{
-
-alert("Reporte generado exitosamente");
-
-}catch{
-
-alert("No se pudo generar el archivo. Intente nuevamente o verifique el espacio en disco.");
-
-}
-
-}
-
-function exportarExcel(){
-
-try{
-
-alert("Reporte generado exitosamente");
-
-}catch{
-
-alert("No se pudo generar el archivo. Intente nuevamente o verifique el espacio en disco.");
-
-}
-
-}
-
-function enviarCorreo(){
-
-alert("Reporte generado exitosamente");
-
-}
-
 </script>
 
 </body>
