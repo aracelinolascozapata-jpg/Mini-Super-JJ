@@ -2,198 +2,465 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Gestionar Seguridad y Control de Accesos</title>
 
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+
 <style>
-
-body{
-font-family:Arial;
-background:#f4f4f4;
-margin:0;
-padding:20px;
+/* Base de interfaz profesional */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
 }
 
-h2{
-text-align:center;
+body { 
+    background: linear-gradient(135deg, #f0f4f8 0%, #d6e6f2 100%); 
+    margin: 0; 
+    padding: 40px 20px;
+    color: #4a403a; /* Marrón vintage oscuro */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
 }
 
-table{
-width:100%;
-border-collapse:collapse;
-background:white;
+.container {
+    width: 100%;
+    max-width: 800px;
+    background: #ffffff; 
+    padding: 40px; 
+    border-radius: 16px;
+    box-shadow: 0 15px 35px rgba(74, 64, 58, 0.04);
+    border: 1px solid rgba(232, 229, 226, 0.7);
+    box-sizing: border-box;
 }
 
-th,td{
-border:1px solid #ccc;
-padding:10px;
-text-align:center;
+h2 { 
+    text-align: center; 
+    color: #4a403a;
+    font-size: 24px;
+    margin-top: 0;
+    margin-bottom: 30px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
 }
 
-th{
-background:#eee;
+h2 .material-icons-outlined {
+    font-size: 28px;
+    color: #615c58;
 }
 
-button{
-padding:6px 10px;
-cursor:pointer;
+h3 {
+    color: #4a403a;
+    font-size: 16px;
+    font-weight: 700;
+    margin-top: 0;
+    margin-bottom: 20px;
+    border-left: 3px solid #cbd0f1; /* Detalle lila de la paleta */
+    padding-left: 12px;
+    letter-spacing: -0.2px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
-.panel{
-margin-top:20px;
-background:white;
-padding:20px;
-display:none;
+/* Tablas estilizadas */
+.table-wrapper {
+    overflow-x: auto;
+    margin-top: 25px;
+    border-radius: 12px;
+    border: 1px solid #e8e5e2;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.01);
 }
 
-.mensaje{
-color:red;
-font-weight:bold;
+table { 
+    width: 100%; 
+    border-collapse: collapse; 
+    background: #ffffff;
+    font-size: 14px;
 }
 
+th, td { 
+    padding: 14px 18px; 
+    text-align: left; 
+    border-bottom: 1px solid #e8e5e2;
+}
+
+th { 
+    background: #cbd0f1; /* Lila pastel */
+    color: #3b3e54;
+    font-weight: 600;
+}
+
+tr:last-child td {
+    border-bottom: none;
+}
+
+tr:hover {
+    background-color: #fcfbfa;
+}
+
+/* Inputs, Selects y Formularios */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+label {
+    font-weight: 600;
+    font-size: 13px;
+    color: #615c58;
+}
+
+input[type="text"], 
+input[type="email"], 
+input[type="password"], 
+select { 
+    padding: 11px 14px; 
+    border: 1px solid #e8e5e2;
+    border-radius: 8px;
+    font-size: 14px;
+    outline: none;
+    background-color: #fcfbfa;
+    color: #4a403a;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+input:focus, select:focus {
+    background-color: #ffffff;
+    border-color: #babcde;
+    box-shadow: 0 0 0 3px rgba(203, 208, 241, 0.3);
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 13.5px;
+    margin-top: 5px;
+    color: #615c58;
+}
+
+.checkbox-label input {
+    width: 16px;
+    height: 16px;
+    accent-color: #4a403a;
+    cursor: pointer;
+}
+
+/* Paneles de registro y edición */
+.panel { 
+    margin-top: 30px; 
+    background: #ffffff; 
+    padding: 30px; 
+    border-radius: 12px;
+    border: 1px solid rgba(232, 229, 226, 0.9);
+    box-shadow: 0 4px 20px rgba(74, 64, 58, 0.02);
+}
+
+/* Botones ejecutivos */
+button { 
+    padding: 11px 20px; 
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer; 
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    color: #4a403a;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+}
+
+button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+}
+
+button:active {
+    transform: translateY(1px);
+}
+
+.btn-registrar { background: #d1ebd9; color: #3b5249; } /* Verde Menta */
+.btn-registrar:hover { background: #b8dec4; }
+
+.btn-editar { background: #cbd0f1; color: #3b3e54; padding: 6px 14px; font-size: 13px; border-radius: 6px; font-weight: 500; } 
+.btn-editar:hover { background: #babcde; }
+
+.btn-confirmar { background: #b9d7ea; color: #3c4b54; } /* Celeste */
+.btn-confirmar:hover { background: #a2c5db; }
+
+.btn-cancelar { background: #e8e5e2; color: #615c58; }
+.btn-cancelar:hover { background: #dad6d2; }
+
+/* Mensajes de feedback dinámicos */
+.mensaje { 
+    margin-top: 20px;
+    font-size: 13.5px; 
+    font-weight: 600; 
+    color: #e57373;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
 </style>
-
 </head>
 
 <body>
 
-<h2>Módulo Usuarios y Seguridad</h2>
+<div class="container">
 
-<table>
+    <h2><span class="material-icons-outlined">admin_panel_settings</span> Módulo Usuarios y Seguridad</h2>
 
-<thead>
-<tr>
-<th>Usuario</th>
-<th>Rol</th>
-<th>Acción</th>
-</tr>
-</thead>
+    <div style="display: flex; justify-content: flex-start; margin-bottom: 10px;">
+        <button onclick="mostrarPanelNuevo()" class="btn-registrar">
+            <span class="material-icons-outlined">person_add</span> Registrar Nuevo Usuario
+        </button>
+    </div>
 
-<tbody id="tablaUsuarios"></tbody>
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>Usuario (Correo)</th>
+                    <th>Rol de Acceso</th>
+                    <th style="text-align: center; width: 120px;">Acción</th>
+                </tr>
+            </thead>
+            <tbody id="tablaUsuarios"></tbody>
+        </table>
+    </div>
 
-</table>
+    <div class="panel" id="panelEdicion" style="display:none;">
+        <h3><span class="material-icons-outlined">shield</span> Modificar Permisos del Usuario</h3>
+        <p id="usuarioSeleccionado" style="font-weight: 600; color: #615c58; margin-bottom: 24px; background: #fcfbfa; padding: 12px 16px; border-radius: 8px; border: 1px solid #e8e5e2; font-size: 14px;"></p>
 
-<div class="panel" id="panelEdicion">
+        <div class="form-group">
+            <label for="rol">Asignar Nuevo Rol:</label>
+            <select id="rol">
+                <option>Encargado</option>
+                <option>Propietario</option>
+                <option>Gerente</option>    
+            </select>
+        </div>
 
-<h3>Modificar permisos del usuario</h3>
+        <div class="form-group">
+            <label for="password">Nueva Contraseña (Dejar en blanco para conservar actual):</label>
+            <input type="password" id="password" placeholder="••••••••">
+        </div>
 
-<p id="usuarioSeleccionado"></p>
+        <div class="form-group" style="margin-bottom: 25px;">
+            <label class="checkbox-label">
+                <input type="checkbox" id="revocar"> Revocar acceso al sistema (Suspender)
+            </label>
+        </div>
+        
+        <div style="display: flex; gap: 10px;">
+            <button onclick="guardarCambios()" class="btn-confirmar">
+                <span class="material-icons-outlined">save</span> Confirmar Cambios
+            </button>
+            <button onclick="cerrarPaneles()" class="btn-cancelar">Cancelar</button>
+        </div>
+        <p id="mensajeEdicion" class="mensaje"></p>
+    </div>
 
-<label>Nuevo Rol</label>
-<select id="rol">
-<option>Encargado</option>
-<option>Propietario</option>
-<option>Gerente</option>	
-</select>
+    <div class="panel" id="panelNuevo" style="display:none;">
+        <h3><span class="material-icons-outlined">person_outline</span> Registrar Nuevo Empleado / Usuario</h3>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+            <div class="form-group">
+                <label for="nuevoNombre">Nombre:</label>
+                <input type="text" id="nuevoNombre" placeholder="Ej. Juan">
+            </div>
+            <div class="form-group">
+                <label for="nuevoApellido">Apellido Paterno:</label>
+                <input type="text" id="nuevoApellido" placeholder="Ej. Pérez">
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label for="nuevoCorreo">Correo Electrónico (Será su Usuario de Acceso):</label>
+            <input type="email" id="nuevoCorreo" placeholder="ejemplo@minisuper.com">
+        </div>
 
-<br><br>
+        <div class="form-group">
+            <label for="nuevaPass">Contraseña Inicial:</label>
+            <input type="password" id="nuevaPass" placeholder="Asigna una clave segura">
+        </div>
 
-<label>Nueva contraseña</label>
-<input type="password" id="password">
-
-<br><br>
-
-<label>
-<input type="checkbox" id="revocar">
-Revocar acceso
-</label>
-
-<br><br>
-
-<button onclick="guardarCambios()">Confirmar Cambios</button>
-
-<p id="mensaje" class="mensaje"></p>
+        <div class="form-group">
+            <label for="nuevoRol">Rol Organizacional:</label>
+            <select id="nuevoRol">
+                <option value="1">Propietario / Dueño</option>
+                <option value="2">Encargado / Cajero</option>
+                <option value="3">Gerente</option>  
+            </select>
+        </div>
+        
+        <div style="display: flex; gap: 10px; margin-top: 25px;">
+            <button onclick="guardarNuevoUsuario()" class="btn-registrar">
+                <span class="material-icons-outlined">check_circle</span> Crear Usuario
+            </button>
+            <button onclick="cerrarPaneles()" class="btn-cancelar">Cancelar</button>
+        </div>
+        <p id="mensajeNuevo" class="mensaje"></p>
+    </div>
 
 </div>
 
 <script>
-
-/* Mostrar lista de usuarios */
-
 let usuariosDB = [];
+let indiceSeleccionado = -1;
+
+window.onload = cargarUsuariosDesdeDB;
 
 function cargarUsuariosDesdeDB() {
-    fetch('SeguridadServlet')
+    fetch('/inicio_sesion/SeguridadServlet')
         .then(response => response.json())
         .then(data => {
             usuariosDB = data;
-            renderizarTabla();
+            renderizerTabla();
         })
         .catch(error => console.error('Error al cargar usuarios:', error));
 }
 
-function renderizarTabla() {
+function renderizerTabla() {
     let tabla = document.getElementById("tablaUsuarios");
     tabla.innerHTML = "";
-
     usuariosDB.forEach((u, i) => {
         let fila = `<tr>
-            <td>${u.usuario}</td>
-            <td>${u.rol}</td>
-            <td><button onclick="seleccionarUsuario(${i})">Editar</button></td>
+            <td style="font-weight: 500;">${u.usuario}</td>
+            <td><span style="background: #e8e5e2; padding: 4px 8px; border-radius: 6px; font-size: 12px; font-weight: bold; color: #5c534e;">${u.rol}</span></td>
+            <td style="text-align: center;"><button onclick="seleccionarUsuario(${i})" class="btn-editar">Editar</button></td>
         </tr>`;
         tabla.innerHTML += fila;
     });
 }
 
-// Llamamos a la función al cargar la página
-window.onload = cargarUsuariosDesdeDB;
+function cerrarPaneles() {
+    document.getElementById("panelEdicion").style.display = "none";
+    document.getElementById("panelNuevo").style.display = "none";
+    document.getElementById("mensajeEdicion").innerText = "";
+    document.getElementById("mensajeNuevo").innerText = "";
+}
 
-/* Actualiza también seleccionarUsuario para que use el nuevo arreglo */
+// ----------------- LÓGICA DE EDICIÓN -----------------
 function seleccionarUsuario(i) {
+    cerrarPaneles();
     indiceSeleccionado = i;
     let usuario = usuariosDB[i];
-    document.getElementById("usuarioSeleccionado").innerText = "Usuario: " + usuario.usuario;
+    document.getElementById("usuarioSeleccionado").innerHTML = `<span class="material-icons-outlined" style="font-size:16px; vertical-align:middle; margin-right:4px;">mail</span> Usuario actual: <b>${usuario.usuario}</b>`;
     document.getElementById("rol").value = usuario.rol;
     document.getElementById("panelEdicion").style.display = "block";
 }
 
-
-/* Guardar cambios */
-
 function guardarCambios() {
-    let mensaje = document.getElementById("mensaje");
-    let usuarioActual = usuariosDB[indiceSeleccionado]; // Usamos el arreglo de la DB
+    let mensaje = document.getElementById("mensajeEdicion");
+    let usuarioActual = usuariosDB[indiceSeleccionado];
     
     let nuevoRol = document.getElementById("rol").value;
     let nuevaPass = document.getElementById("password").value;
-    // Si el checkbox está marcado, enviamos 'true'
-    let revocar = document.getElementById("revocar").checked;
+    
+    let idRol = (nuevoRol === "Propietario" || nuevoRol === "Dueño") ? 1 : (nuevoRol === "Gerente") ? 3 : 2;
 
-    // Convertimos el nombre del rol a ID (1=Dueño, 2=Encargado, 3=Gerente)
-    let idRol;
-    if (nuevoRol === "Propietario" || nuevoRol === "Dueño") {
-        idRol = 1;
-    } else if (nuevoRol === "Encargado" || nuevoRol === "Empleado") {
-        idRol = 2;
-    } else if (nuevoRol === "Gerente") {
-        idRol = 3;
-    }
+    mensaje.style.color = "#d97706"; // Tono ámbar/naranja corporativo para cargas
+    mensaje.innerHTML = `<span class="material-icons-outlined" style="font-size:16px; vertical-align:middle; animation: spin 2s linear infinite;">sync</span> Guardando cambios en Oracle...`;
 
-    mensaje.innerText = "Guardando en Oracle...";
-
-    fetch('SeguridadServlet', {
+    fetch('/inicio_sesion/SeguridadServlet', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: `idLogin=${usuarioActual.id}&idRol=${idRol}&password=${encodeURIComponent(nuevaPass)}&revocar=${revocar}`
+        body: `operacion=editar&idLogin=${usuarioActual.id}&idRol=${idRol}&password=${encodeURIComponent(nuevaPass)}`
     })
     .then(response => response.text())
     .then(res => {
         if (res === "ok") {
-            mensaje.style.color = "green";
-            mensaje.innerText = "¡Cambios guardados en la base de datos!";
-            cargarUsuariosDesdeDB(); // Recargamos la tabla para ver los cambios
+            alert("¡Permisos actualizados correctamente!");
+            cerrarPaneles();
+            cargarUsuariosDesdeDB();
         } else {
-            mensaje.style.color = "red";
-            mensaje.innerText = "Error al actualizar en Oracle";
+            mensaje.style.color = "#e57373";
+            mensaje.innerHTML = `<span class="material-icons-outlined" style="font-size:16px; vertical-align:middle;">error_outline</span> Error: ${res}`;
         }
     })
     .catch(error => {
-        mensaje.style.color = "red";
-        mensaje.innerText = "Error de red";
-        console.error(error);
+        mensaje.style.color = "#e57373";
+        mensaje.innerHTML = `<span class="material-icons-outlined" style="font-size:16px; vertical-align:middle;">error_outline</span> Error de red al actualizar.`;
     });
 }
 
+// ----------------- LÓGICA DE NUEVO USUARIO -----------------
+function mostrarPanelNuevo() {
+    cerrarPaneles();
+    document.getElementById("nuevoNombre").value = "";
+    document.getElementById("nuevoApellido").value = "";
+    document.getElementById("nuevoCorreo").value = "";
+    document.getElementById("nuevaPass").value = "";
+    document.getElementById("panelNuevo").style.display = "block";
+}
+
+function guardarNuevoUsuario() {
+    let mensaje = document.getElementById("mensajeNuevo");
+    let nombre = document.getElementById("nuevoNombre").value;
+    let apellido = document.getElementById("nuevoApellido").value;
+    let correo = document.getElementById("nuevoCorreo").value;
+    let pass = document.getElementById("nuevaPass").value;
+    let idRol = document.getElementById("nuevoRol").value;
+
+    if (!nombre || !correo || !pass) {
+        mensaje.style.color = "#e57373";
+        mensaje.innerHTML = `<span class="material-icons-outlined" style="font-size:16px; vertical-align:middle;">warning</span> Nombre, correo y contraseña son obligatorios.`;
+        return;
+    }
+
+    mensaje.style.color = "#d97706";
+    mensaje.innerHTML = `<span class="material-icons-outlined" style="font-size:16px; vertical-align:middle;">sync</span> Registrando empleado y credenciales en Oracle...`;
+
+    let formData = new URLSearchParams();
+    formData.append("operacion", "crear");
+    formData.append("nombre", nombre);
+    formData.append("apellido", apellido);
+    formData.append("correo", correo);
+    formData.append("password", pass);
+    formData.append("idRol", idRol);
+
+    fetch('/inicio_sesion/SeguridadServlet', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: formData.toString()
+    })
+    .then(response => response.text())
+    .then(res => {
+        if (res === "ok") {
+            alert("¡Nuevo empleado y usuario creado exitosamente!");
+            cerrarPaneles();
+            cargarUsuariosDesdeDB();
+        } else {
+            mensaje.style.color = "#e57373";
+            mensaje.innerHTML = `<span class="material-icons-outlined" style="font-size:16px; vertical-align:middle;">error_outline</span> Error al crear: ${res}`;
+        }
+    })
+    .catch(error => {
+        mensaje.style.color = "#e57373";
+        mensaje.innerHTML = `<span class="material-icons-outlined" style="font-size:16px; vertical-align:middle;">error_outline</span> Error de red al intentar crear el usuario.`;
+    });
+}
 </script>
 
 </body>
