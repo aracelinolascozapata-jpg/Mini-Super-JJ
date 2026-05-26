@@ -2,373 +2,687 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>MiniSuper JJ</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MiniSuper JJ - Registrar Venta</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
 
 <style>
-
-body{
-font-family:Arial;
-background:#f4f4f4;
-margin:0;
+/* Base de interfaz unificada */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
 }
 
-header{
-background:#2c3e50;
-color:white;
-padding:15px;
-text-align:center;
+body {
+    background: linear-gradient(135deg, #f0f4f8 0%, #d6e6f2 100%);
+    color: #4a403a; /* Marrón vintage oscuro */
+    min-height: 100vh;
+    padding: 30px 20px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
 }
 
-.container{
-padding:20px;
+.container {
+    width: 100%;
+    max-width: 1050px;
+    background: #ffffff;
+    padding: 35px;
+    border-radius: 16px;
+    box-shadow: 0 12px 30px rgba(74, 64, 58, 0.04);
+    border: 1px solid rgba(232, 229, 226, 0.7);
 }
 
-button{
-padding:8px 12px;
-margin:5px;
-cursor:pointer;
+/* Encabezados y Títulos */
+h2, h3, h4 {
+    color: #4a403a;
+    letter-spacing: -0.5px;
 }
 
-input{
-padding:8px;
-margin:5px;
+h2 {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 25px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
-table{
-width:100%;
-border-collapse:collapse;
-margin-top:15px;
+h2 .material-icons-outlined {
+    font-size: 28px;
+    color: #3b5249;
 }
 
-table,th,td{
-border:1px solid #ccc;
+h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #e8e5e2;
+    padding-bottom: 8px;
 }
 
-th,td{
-padding:10px;
-text-align:center;
+/* Control de estados ocultos */
+.hidden { 
+    display: none !important; 
 }
 
-.hidden{
-display:none;
+/* Alerta de Caja Cerrada Estilizada */
+#alertaCajaCerrada {
+    text-align: center;
+    padding: 40px 20px;
+    background: #fcfbfa;
+    border: 1px solid #f7cbd0;
+    border-radius: 12px;
 }
 
-.ticket{
-border:1px solid #ccc;
-background:white;
-padding:15px;
-margin-top:20px;
+#alertaCajaCerrada .material-icons-outlined {
+    font-size: 48px;
+    color: #634347;
+    margin-bottom: 15px;
 }
 
+/* DISEÑO OPERATIVO (Layout en dos columnas) */
+.pos-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: 30px;
+}
+
+@media(max-width: 768px) {
+    .pos-grid { grid-template-columns: 1fr; }
+}
+
+/* Inputs y Formularios de Entrada */
+.form-group {
+    margin-bottom: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+label {
+    font-size: 12px;
+    font-weight: 700;
+    color: #615c58;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-wrapper .material-icons-outlined {
+    position: absolute;
+    left: 12px;
+    color: #babcde;
+    font-size: 20px;
+}
+
+input[type="text"], input[type="number"], select {
+    width: 100%;
+    padding: 12px 12px 12px 40px;
+    border: 1px solid #e8e5e2;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #4a403a;
+    background-color: #fcfbfa;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+input:focus {
+    border-color: #cbd0f1;
+    background-color: #ffffff;
+    box-shadow: 0 0 0 3px rgba(203, 208, 241, 0.3);
+}
+
+input[readonly] {
+    background-color: #e8e5e2;
+    color: #615c58;
+    cursor: not-allowed;
+}
+
+.info-stock {
+    font-size: 12px;
+    font-weight: 600;
+    margin-top: 4px;
+    display: block;
+}
+
+/* Bloque de Fila para Precio y Cantidad */
+.flex-inputs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+/* Tablas del Carrito de Venta */
+.table-wrapper {
+    max-height: 250px;
+    overflow-y: auto;
+    border: 1px solid #e8e5e2;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13.5px;
+}
+
+th, td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #e8e5e2;
+}
+
+th {
+    background: #e8e5e2;
+    color: #5c534e;
+    font-weight: 600;
+    position: sticky;
+    top: 0;
+}
+
+/* Totales de Venta */
+.totales-panel {
+    background: #fcfbfa;
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid #e8e5e2;
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.total-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    color: #615c58;
+}
+
+.total-row.final {
+    font-size: 20px;
+    font-weight: 700;
+    color: #3b5249;
+    border-top: 1px dashed #e8e5e2;
+    padding-top: 10px;
+    margin-top: 5px;
+}
+
+/* Botones de acción basados en paleta pastel */
+button {
+    padding: 12px 18px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.btn-primary { background: #d1ebd9; color: #3b5249; } /* Verde Menta */
+.btn-primary:hover { background: #b8dec4; }
+
+.btn-secondary { background: #e8e5e2; color: #5c534e; } /* Gris Tierra */
+.btn-secondary:hover { background: #dad6d2; }
+
+.btn-danger { background: #f7cbd0; color: #634347; } /* Rosa Pastel */
+.btn-danger:hover { background: #f0b4bc; }
+
+.btn-accent { background: #cbd0f1; color: #3b3e54; } /* Lila */
+.btn-accent:hover { background: #babcde; }
+
+/* Vistas de Procesamiento de Pago y Resumen */
+.resumen-card {
+    background: #fcfbfa;
+    border: 1px solid #e8e5e2;
+    border-radius: 12px;
+    padding: 25px;
+    margin-bottom: 25px;
+    line-height: 1.8;
+}
+
+.metodos-pago {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+/* Ticket de Salida Térmico */
+.ticket {
+    background: #ffffff;
+    border: 2px dashed #4a403a;
+    padding: 30px;
+    border-radius: 4px;
+    max-width: 450px;
+    margin: 30px auto 0 auto;
+    font-family: 'Courier New', Courier, monospace;
+    color: #000000;
+}
+
+.ticket button {
+    font-family: 'Inter', sans-serif;
+    margin-top: 10px;
+    margin-right: 5px;
+}
 </style>
-
 </head>
-
 <body>
-
-<header>
-<h2>Sistema MiniSuper JJ</h2>
-</header>
 
 <div class="container">
 
-<!-- MENU PRINCIPAL -->
+    <h2><span class="material-icons-outlined">shopping_cart</span> Registrar Venta Mostrador</h2>
 
-<div id="menu">
+    <div id="menu" style="text-align: center; padding: 20px 0;">
+        <button onclick="nuevaVenta()" class="btn-primary" style="font-size: 16px; padding: 15px 30px;">
+            <span class="material-icons-outlined">add_shopping_cart</span> Iniciar Nueva Venta
+        </button>
+    </div>
 
-<h3>Menú Principal</h3>
+    <div id="alertaCajaCerrada" class="hidden">
+        <span class="material-icons-outlined">no_encryption_gmailerrorred</span>
+        <h2>Caja Cerrada del Día</h2>
+        <p style="margin-bottom: 20px; color: #615c58;">No se pueden procesar cobros en este momento. Por favor, realice la apertura de valores primero.</p>
+        <button onclick="location.reload()" class="btn-secondary">Verificar de nuevo</button>
+    </div>
 
-<button onclick="nuevaVenta()">Nueva Venta</button>
+    <div id="venta" class="hidden pos-grid">
+        
+        <div>
+            <h3>Agregar Artículos</h3>
+            
+            <div class="form-group">
+                <label for="producto">Producto (Código o Nombre)</label>
+                <div class="input-wrapper">
+                    <span class="material-icons-outlined">search</span>
+                    <input type="text" id="producto" list="listaProductos" placeholder="Escriba código o nombre..." oninput="buscarProducto()">
+                </div>
+                <datalist id="listaProductos"></datalist>
+                <span id="stockActual" class="info-stock"></span>
+            </div>
 
-</div>
+            <div class="flex-inputs">
+                <div class="form-group">
+                    <label for="precio">Precio Unitario</label>
+                    <div class="input-wrapper">
+                        <span class="material-icons-outlined">attach_money</span>
+                        <input type="number" id="precio" readonly step="0.01" placeholder="0.00" style="padding-left: 35px;">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="cantidad">Cantidad</label>
+                    <div class="input-wrapper">
+                        <span class="material-icons-outlined">tag</span>
+                        <input type="number" id="cantidad" min="1" value="1" style="padding-left: 35px;">
+                    </div>
+                </div>
+            </div>
 
-<!-- REGISTRAR VENTA -->
+            <div style="margin-top: 15px; display: flex; gap: 10px;">
+                <button onclick="agregarProducto()" class="btn-primary" style="flex: 1;">
+                    <span class="material-icons-outlined">add</span> Agregar
+                </button>
+                <button onclick="eliminarProducto()" class="btn-danger">
+                    <span class="material-icons-outlined">delete_blur</span> Quitar Último
+                </button>
+            </div>
+        </div>
 
-<div id="venta" class="hidden">
+        <div>
+            <h3>Detalle del Carrito</h3>
+            
+            <div class="table-wrapper">
+                <table id="tabla">
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th>Cant.</th>
+                            <th>Precio</th>
+                            <th>Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        </tbody>
+                </table>
+            </div>
 
-<h3>Registrar Venta</h3>
+            <div class="totales-panel">
+                <div class="total-row"><span>Subtotal:</span> <span>$<span id="subtotal">0.00</span></span></div>
+                <div class="total-row"><span>Impuestos (IVA):</span> <span>$<span id="impuestos">0.00</span></span></div>
+                <div class="total-row final"><span>Total a pagar:</span> <span>$<span id="total">0.00</span></span></div>
+            </div>
 
-<label>Producto</label>
-<input type="text" id="producto">
+            <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                <button onclick="cancelarVenta()" class="btn-secondary">Cancelar</button>
+                <button onclick="finalizarVenta()" class="btn-primary">
+                    Proceder al Pago <span class="material-icons-outlined" style="font-size:16px;">arrow_forward</span>
+                </button>
+            </div>
+        </div>
+    </div>
 
-<label>Cantidad</label>
-<input type="number" id="cantidad">
+    <div id="resumen" class="hidden" style="max-width: 600px; margin: 0 auto;">
+        <h3>Resumen y Método de Pago</h3>
+        <div id="tablaResumen" class="resumen-card"></div>
+        
+        <div class="metodos-pago">
+            <button onclick="pagoEfectivo()" class="btn-primary">
+                <span class="material-icons-outlined">payments</span> Pago Efectivo
+            </button>
+            <button onclick="pagoMercado()" class="btn-accent">
+                <span class="material-icons-outlined">qr_code_2</span> Mercado Pago
+            </button>
+        </div>
+        <button onclick="volverVenta()" class="btn-secondary" style="width: 100%;">Regresar a la venta</button>
+    </div>
 
-<button onclick="agregarProducto()">Agregar Producto</button>
-<button onclick="eliminarProducto()">Eliminar Producto</button>
+    <div id="efectivo" class="hidden" style="max-width: 400px; margin: 0 auto;">
+        <h3>Cobro en Efectivo</h3>
+        <div class="form-group">
+            <label for="monto">Monto Recibido</label>
+            <div class="input-wrapper">
+                <span class="material-icons-outlined">monetization_on</span>
+                <input type="number" id="monto" step="0.50" placeholder="0.00">
+            </div>
+        </div>
+        <button onclick="confirmarEfectivo()" class="btn-primary" style="width: 100%; margin-top: 10px;">Confirmar Transacción</button>
+    </div>
 
-<table id="tabla">
+    <div id="mercado" class="hidden" style="max-width: 400px; margin: 0 auto; text-align: center;">
+        <h3>Terminal Mercado Pago QR</h3>
+        <p style="color: #615c58; margin-bottom: 20px;">Escanee el código generado en la pantalla de la terminal externa.</p>
+        <div style="background: #fcfbfa; padding: 30px; border-radius: 12px; border: 1px dashed #cbd0f1; margin-bottom: 20px;">
+            <span class="material-icons-outlined" style="font-size: 64px; color: #3b3e54;">qr_code_scanner</span>
+        </div>
+        <div style="display: flex; gap: 10px;">
+            <button onclick="confirmarMercado()" class="btn-primary" style="flex: 1;">Pago Exitoso</button>
+            <button onclick="falloMercado()" class="btn-danger">Declinar</button>
+        </div>
+    </div>
 
-<tr>
-<th>Producto</th>
-<th>Cantidad</th>
-<th>Precio Unitario</th>
-<th>Subtotal</th>
-</tr>
-
-</table>
-
-<h4>Subtotal: $<span id="subtotal">0</span></h4>
-<h4>Impuestos: $<span id="impuestos">0</span></h4>
-<h3>Total: $<span id="total">0</span></h3>
-
-<button onclick="finalizarVenta()">Finalizar Venta</button>
-<button onclick="cancelarVenta()">Cancelar</button>
-
-</div>
-
-<!-- RESUMEN -->
-
-<div id="resumen" class="hidden">
-
-<h3>Resumen de Venta</h3>
-
-<div id="tablaResumen"></div>
-
-<h3>Método de Pago</h3>
-
-<button onclick="pagoEfectivo()">Efectivo</button>
-<button onclick="pagoMercado()">Mercado Pago</button>
-
-<button onclick="volverVenta()">Regresar</button>
-
-</div>
-
-<!-- EFECTIVO -->
-
-<div id="efectivo" class="hidden">
-
-<h3>Pago en Efectivo</h3>
-
-<label>Monto recibido</label>
-<input type="number" id="monto">
-
-<button onclick="confirmarEfectivo()">Confirmar</button>
-
-</div>
-
-<!-- MERCADO PAGO -->
-
-<div id="mercado" class="hidden">
-
-<h3>Pago con Mercado Pago</h3>
-
-<p>Simulación de código QR</p>
-
-<button onclick="confirmarMercado()">Confirmar pago exitoso</button>
-<button onclick="falloMercado()">Simular pago fallido</button>
-
-</div>
-
-<!-- TICKET -->
-
-<div id="ticket" class="hidden ticket"></div>
+    <div id="ticket" class="hidden ticket"></div>
 
 </div>
 
 <script>
-let inventario={
-		"Coca":{precio:18,stock:10},
-		"Papas":{precio:20,stock:5},
-		"Pan":{precio:10,stock:8}
-		};
+// --- TU LÓGICA DE JAVASCRIPT PERMANECE 100% INTACTA ---
+let inventarioBD = []; 
+let productoSeleccionado = null; 
 
-		let venta=[];
-		let subtotal=0;
-		let impuestos=0;
-		let total=0;
+let venta = [];
+let subtotal = 0;
+let impuestos = 0;
+let total = 0;
 
-		function nuevaVenta(){
-		    document.getElementById("menu").classList.add("hidden");
-		    document.getElementById("venta").classList.remove("hidden");
-		}
+window.onload = function() {
+    fetch('/inicio_sesion/caja?accion=verificarEstado')
+        .then(res => res.json())
+        .then(cajaData => {
+            if (!cajaData.abierta) {
+                document.getElementById("menu").classList.add("hidden");
+                document.getElementById("alertaCajaCerrada").classList.remove("hidden");
+            } else {
+                cargarInventario();
+            }
+        })
+        .catch(err => console.error("Error verificando caja:", err));
+};
 
-		function agregarProducto(){
-		    let nombre=document.getElementById("producto").value;
-		    let cantidad=parseInt(document.getElementById("cantidad").value);
+function cargarInventario() {
+    fetch('/inicio_sesion/ventas')
+        .then(response => response.json())
+        .then(data => {
+            console.log("Inventario cargado:", data);
+            inventarioBD = data;
+            let datalist = document.getElementById("listaProductos");
+            datalist.innerHTML = "";
+            
+            data.forEach(item => {
+                let opt = document.createElement("option");
+                opt.value = item.nombre;
+                opt.text = "ID: " + item.id + " | Precio: $" + item.precio;
+                datalist.appendChild(opt);
+            });
+        })
+        .catch(err => console.error("Error cargando inventario:", err));
+}
 
-		    if(!inventario[nombre]){
-		        alert("Producto no registrado en el inventario");
-		        return;
-		    }
+function nuevaVenta(){
+    document.getElementById("menu").classList.add("hidden");
+    document.getElementById("venta").classList.remove("hidden");
+}
 
-		    if(cantidad>inventario[nombre].stock){
-		        alert("Stock insuficiente. Máximo disponible: "+inventario[nombre].stock);
-		        return;
-		    }
+function buscarProducto() {
+    let input = document.getElementById("producto").value.trim().toLowerCase();
+    let txtStock = document.getElementById("stockActual");
+    let inputPrecio = document.getElementById("precio");
+    
+    productoSeleccionado = null;
+    txtStock.innerText = "";
+    inputPrecio.value = "";
 
-		    let precio=inventario[nombre].precio;
-		    let sub=precio*cantidad;
+    if (input === "") return;
 
-		    venta.push({nombre,cantidad,precio,sub});
+    let encontrado = inventarioBD.find(p => 
+        p.id.toLowerCase() === input || p.nombre.toLowerCase().includes(input)
+    );
 
-		    let tabla=document.getElementById("tabla");
-		    let fila=tabla.insertRow();
+    if (encontrado) {
+        productoSeleccionado = encontrado;
+        inputPrecio.value = encontrado.precio;
+        txtStock.innerText = "(Stock disponible: " + encontrado.stock + ")";
+        txtStock.style.color = (encontrado.stock <= 5) ? "#634347" : "#3b5249";
+    }
+}
 
-		    fila.insertCell(0).innerHTML=nombre;
-		    fila.insertCell(1).innerHTML=cantidad;
-		    fila.insertCell(2).innerHTML="$"+precio;
-		    fila.insertCell(3).innerHTML="$"+sub;
+function agregarProducto(){
+    let cantidad = parseInt(document.getElementById("cantidad").value);
 
-		    subtotal+=sub;
-		    impuestos=0;
-		    total=subtotal+impuestos;
+    if (!productoSeleccionado) {
+        alert("Por favor, selecciona un producto válido de la lista.");
+        return;
+    }
 
-		    document.getElementById("subtotal").innerText=subtotal;
-		    document.getElementById("impuestos").innerText=impuestos;
-		    document.getElementById("total").innerText=total;
-		}
+    if (isNaN(cantidad) || cantidad <= 0) {
+        alert("Ingresa una cantidad válida.");
+        return;
+    }
 
-		function eliminarProducto(){
-		    let tabla=document.getElementById("tabla");
-		    if(tabla.rows.length>1){
-		        tabla.deleteRow(tabla.rows.length-1);
-		        let p=venta.pop();
-		        subtotal-=p.sub;
-		        total=subtotal;
-		        document.getElementById("subtotal").innerText=subtotal;
-		        document.getElementById("total").innerText=total;
-		    }
-		}
+    if (cantidad > productoSeleccionado.stock) {
+        alert("Stock insuficiente. Máximo disponible: " + productoSeleccionado.stock);
+        return;
+    }
 
-		function finalizarVenta(){
-		    if(venta.length==0){
-		        alert("Debe agregar al menos un producto a la venta");
-		        return;
-		    }
+    let nombre = productoSeleccionado.nombre;
+    let precio = productoSeleccionado.precio;
+    let sub = precio * cantidad;
 
-		    document.getElementById("venta").classList.add("hidden");
-		    document.getElementById("resumen").classList.remove("hidden");
+    venta.push({ nombre, cantidad, precio, sub });
 
-		    let texto="";
-		    venta.forEach(p=>{
-		        texto+=p.nombre+" "+p.cantidad+" x $"+p.precio+" = $"+p.sub+"<br>";
-		    });
+    productoSeleccionado.stock -= cantidad; 
+    document.getElementById("stockActual").innerText = "(Stock disponible: " + productoSeleccionado.stock + ")";
 
-		    document.getElementById("tablaResumen").innerHTML=texto+"<br>Total: $"+total;
-		}
+    let tabla = document.getElementById("tabla");
+    let fila = tabla.insertRow();
+    fila.insertCell(0).innerHTML = nombre;
+    fila.insertCell(1).innerHTML = cantidad;
+    fila.insertCell(2).innerHTML = "$" + precio;
+    fila.insertCell(3).innerHTML = "$" + sub;
 
-		function volverVenta(){
-		    document.getElementById("resumen").classList.add("hidden");
-		    document.getElementById("venta").classList.remove("hidden");
-		}
+    subtotal += sub;
+    impuestos = 0; 
+    total = subtotal + impuestos;
 
-		function pagoEfectivo(){
-		    document.getElementById("resumen").classList.add("hidden");
-		    document.getElementById("efectivo").classList.remove("hidden");
-		}
+    document.getElementById("subtotal").innerText = subtotal.toFixed(2);
+    document.getElementById("impuestos").innerText = impuestos.toFixed(2);
+    document.getElementById("total").innerText = total.toFixed(2);
 
-		function confirmarEfectivo(){
-		    let monto=parseFloat(document.getElementById("monto").value);
-		    if(monto<total){
-		        alert("Monto insuficiente. Faltan: "+(total-monto));
-		        return;
-		    }
-		    let cambio=monto-total;
-		    registrarVenta("Efectivo",cambio);
-		}
+    document.getElementById("producto").value = "";
+    document.getElementById("precio").value = "";
+    document.getElementById("cantidad").value = "1";
+    document.getElementById("stockActual").innerText = "";
+    productoSeleccionado = null;
+}
 
-		function pagoMercado(){
-		    document.getElementById("resumen").classList.add("hidden");
-		    document.getElementById("mercado").classList.remove("hidden");
-		}
+function eliminarProducto(){
+    let tabla = document.getElementById("tabla");
+    if(tabla.rows.length > 1){
+        tabla.deleteRow(tabla.rows.length - 1);
+        let p = venta.pop();
+        
+        let prodBD = inventarioBD.find(item => item.nombre === p.nombre);
+        if (prodBD) prodBD.stock += p.cantidad;
 
-		function confirmarMercado(){
-		    registrarVenta("Mercado Pago",0);
-		}
+        subtotal -= p.sub;
+        total = subtotal + impuestos;
+        document.getElementById("subtotal").innerText = subtotal.toFixed(2);
+        document.getElementById("total").innerText = total.toFixed(2);
+        
+        document.getElementById("stockActual").innerText = "";
+    }
+}
 
-		function falloMercado(){
-		    alert("Pago con tarjeta fallido. Intente con otro método");
-		    document.getElementById("mercado").classList.add("hidden");
-		    document.getElementById("resumen").classList.remove("hidden");
-		}
+function finalizarVenta(){
+    if(venta.length == 0){
+        alert("Debe agregar al menos un producto a la venta");
+        return;
+    }
+    document.getElementById("venta").classList.add("hidden");
+    document.getElementById("resumen").classList.remove("hidden");
 
-		// ESTA ES LA FUNCIÓN QUE SE MODIFICÓ PARA CONECTAR CON JAVA
-		function registrarVenta(metodo,cambio){
-		    try{
-		        // 1. Descontar del inventario local (visual)
-		        venta.forEach(p=>{
-		            inventario[p.nombre].stock-=p.cantidad;
-		        });
+    let texto = "";
+    venta.forEach(p => {
+        texto += "• " + p.nombre + " (" + p.cantidad + " pz) x $" + p.precio + " = $" + p.sub.toFixed(2) + "<br>";
+    });
+    document.getElementById("tablaResumen").innerHTML = texto + "<br><b>Total a cobrar: $" + total.toFixed(2) + "</b>";
+}
 
-		        // 2. Generar el ticket en pantalla
-		        let numero=Math.floor(Math.random()*100000);
-		        let ticket="Numero de venta: "+numero+"<br><br>";
+function volverVenta(){
+    document.getElementById("resumen").classList.add("hidden");
+    document.getElementById("venta").classList.remove("hidden");
+}
 
-		        venta.forEach(p=>{
-		            ticket+=p.nombre+" "+p.cantidad+" x $"+p.precio+" = $"+p.sub+"<br>";
-		        });
+function pagoEfectivo(){
+    document.getElementById("resumen").classList.add("hidden");
+    document.getElementById("efectivo").classList.remove("hidden");
+}
 
-		        ticket+="<br>Total: $"+total+"<br>";
-		        ticket+="Metodo de pago: "+metodo+"<br>";
+function confirmarEfectivo(){
+    let monto = parseFloat(document.getElementById("monto").value);
+    if (isNaN(monto) || monto < total){
+        alert("Monto insuficiente. Faltan: $" + (total - monto).toFixed(2));
+        return;
+    }
+    let cambio = monto - total;
+    procesarGuardadoBD("Efectivo", cambio);
+}
 
-		        if(cambio>0){
-		            ticket+="Cambio: $"+cambio+"<br>";
-		        }
+function pagoMercado(){
+    document.getElementById("resumen").classList.add("hidden");
+    document.getElementById("mercado").classList.remove("hidden");
+}
 
-		        ticket+="<br><button onclick='imprimir()'>Imprimir Ticket</button>";
-		        ticket+="<button onclick='correo()'>Enviar por correo</button>";
-		        ticket+="<button onclick='menuPrincipal()'>Regresar al menú</button>";
+function confirmarMercado(){
+    procesarGuardadoBD("Mercado Pago", 0);
+}
 
-		        document.getElementById("mercado").classList.add("hidden");
-		        document.getElementById("efectivo").classList.add("hidden");
+function falloMercado(){
+    alert("Pago fallido. Intente con otro método");
+    document.getElementById("mercado").classList.add("hidden");
+    document.getElementById("resumen").classList.remove("hidden");
+}
 
-		        let div=document.getElementById("ticket");
-		        div.innerHTML=ticket;
-		        div.classList.remove("hidden");
+function procesarGuardadoBD(metodo, cambio) {
+    let formData = new URLSearchParams();
+    formData.append("total", total);
+    formData.append("metodoPago", metodo);
+    
+    venta.forEach(p => {
+        formData.append("productos", p.nombre);
+        formData.append("cantidades", p.cantidad);
+        formData.append("precios", p.precio);
+        formData.append("subtotales", p.sub);
+    });
 
-		        // 3. ENVIAR LOS DATOS A JAVA (Mapeo hacia el Servlet 'ventas')
-		        let formData = new URLSearchParams();
-		        formData.append("total", total);
-		        formData.append("metodoPago", metodo);
-		        
-		        // Agregar todos los productos del carrito al envío
-		        venta.forEach(p => {
-		            formData.append("productos", p.nombre);
-		            formData.append("cantidades", p.cantidad);
-		            formData.append("precios", p.precio);
-		            formData.append("subtotales", p.sub);
-		        });
+    document.getElementById("mercado").classList.add("hidden");
+    document.getElementById("efectivo").classList.add("hidden");
+    
+    let divTicket = document.getElementById("ticket");
+    divTicket.innerHTML = "<h3>Procesando transacción en Oracle...</h3>";
+    divTicket.classList.remove("hidden");
 
-		        // Petición al backend
-		        fetch('ventas', {
-		            method: 'POST',
-		            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-		            body: formData.toString()
-		        })
-		        .then(response => response.text())
-		        .then(data => {
-		            console.log("Respuesta de Java: ", data);
-		            // Opcional: alert("Guardado en BD: " + data);
-		        })
-		        .catch(error => {
-		            console.error('Error al conectar con Java:', error);
-		        });
+    fetch('/inicio_sesion/ventas', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: formData.toString()
+    })
+    .then(res => res.text())
+    .then(respuesta => {
+        let partes = respuesta.trim().split("|");
+        
+        if (partes[0] === "ok") {
+            let numero = Math.floor(Math.random() * 100000);
+            let htmlTicket = `MINISUPER JJ<br>Numero de venta: #${numero}<br>--------------------------<br>`;
+            
+            venta.forEach(p => {
+                htmlTicket += `${p.nombre}<br>&nbsp;&nbsp; ${p.cantidad} x $${p.precio} = $${p.sub.toFixed(2)}<br>`;
+            });
 
-		    }catch(e){
-		        alert("Error al registrar la venta. Intente nuevamente");
-		        console.error(e);
-		    }
-		}
+            htmlTicket += `--------------------------<br>Total: $${total.toFixed(2)}<br>Metodo de pago: ${metodo}<br>`;
+            
+            if (cambio > 0) {
+                htmlTicket += `Cambio: $${cambio.toFixed(2)}<br>`;
+            }
 
-		function imprimir(){
-		    alert("Ticket enviado a impresora");
-		}
+            htmlTicket += `<br>
+                           <button onclick='window.print()' class='btn-primary'>Imprimir Ticket</button>
+                           <button onclick='correo()' class='btn-accent'>Enviar Correo</button>
+                           <button onclick='location.reload()' class='btn-secondary'>Regresar</button>`;
 
-		function correo(){
-		    alert("Ticket enviado por correo");
-		}
+            divTicket.innerHTML = htmlTicket;
 
-		function menuPrincipal(){
-		    location.reload();
-		}
+            if (partes.length > 1) {
+                let productosBajos = partes[1];
+                window.open('AlertasDeInventario.html?productos=' + encodeURIComponent(productosBajos), 
+                            'Alerta', 'width=420,height=320');
+            }
+        } else {
+            divTicket.innerHTML = `<h3 style="color:#634347">Error al registrar la venta</h3>
+                                   <p>${respuesta}</p>
+                                   <button onclick='location.reload()' class='btn-secondary'>Volver a intentar</button>`;
+        }
+    })
+    .catch(err => {
+        divTicket.innerHTML = `<h3 style="color:#634347">Error de conexión con el servidor</h3>
+                               <button onclick='location.reload()' class='btn-secondary'>Reintentar</button>`;
+    });
+}
 
-		function cancelarVenta(){
-		    let confirmar=confirm("¿Seguro que desea cancelar la venta? Se perderán los datos.");
-		    if(confirmar){
-		        location.reload();
-		    }
-		}
+function cancelarVenta(){
+    if (confirm("¿Seguro que desea cancelar la venta? Se perderán los datos.")) {
+        location.reload();
+    }
+}
+function correo(){
+    alert("Simulación de envío de correo exitoso.");
+}
 </script>
 
 </body>
