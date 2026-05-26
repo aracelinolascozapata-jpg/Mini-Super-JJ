@@ -93,7 +93,7 @@ public class entrada_mercancia extends HttpServlet {
                 // 3. Si filasStock es 0, el producto NO existe. Lo INSERTAMOS.
                 if (filasStock == 0) {
                     String sqlNuevo = "INSERT INTO Productos (id_producto, id_proveedor, nombre, precio_compra, precio_venta, cantidad, stock_minimo) " +
-                                      "VALUES (SEQ_PRODUCTOS.NEXTVAL, (SELECT id_proveedor FROM Proveedor WHERE nombre = ?), ?, ?, ?, ?, 5)";
+                                      "VALUES (SEQ_PRODUCTOS.NEXTVAL, (SELECT id_proveedor FROM Proveedor WHERE nombre = ?), ?, ?, ?, ?, 10)";
                     try (PreparedStatement psInsert = conn.prepareStatement(sqlNuevo)) {
                         psInsert.setString(1, nombreProv);
                         psInsert.setString(2, nombreProd);
