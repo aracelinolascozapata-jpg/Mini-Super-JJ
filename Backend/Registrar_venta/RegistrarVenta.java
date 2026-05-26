@@ -6,6 +6,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Statement;
 import java.sql.SQLException;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -17,96 +18,170 @@ import javax.servlet.http.HttpServletResponse;
 public class ventas extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
+    String url = "jdbc:oracle:thin:@localhost:1521:xe";
+    String user = "soft";
+    String pass = "soft";
+
+    // 1. CARGAR PRODUCTOS (Para autocompletar nombre, precio y stock en el HTML)
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
         PrintWriter out = response.getWriter();
 
-        // 1. Recibir los datos generales de la venta
+        try {
+            Class.forName("oracle.jdbc.OracleDriver");
+            try (Connection conn = DriverManager.getConnection(url, user, pass)) {
+                // Traemos el ID, Nombre, Precio de Venta y Cantidad (Stock disponible)
+                String sql = "SELECT id_producto, nombre, precio_venta, cantidad FROM Productos WHERE cantidad > 0";
+                Statement st = conn.createStatement();
+                ResultSet rs = st.executeQuery(sql);
+
+                StringBuilder json = new StringBuilder("[");
+                boolean first = true;
+                while (rs.next()) {
+                    if (!first) json.append(",");
+                    int idProd = rs.getInt("ID_PRODUCTO");
+                    String nombreProd = rs.getString("NOMBRE");
+                    double precioVenta = rs.getDouble("PRECIO_VENTA");
+                    int cantidadStock = rs.getInt("CANTIDAD");
+
+                    if (nombreProd != null) {
+                        nombreProd = nombreProd.replace("\"", "\\\"");
+                    }
+
+                    json.append("{")
+                        .append("\"id\":\"").append(idProd).append("\",")
+                        .append("\"nombre\":\"").append(nombreProd).append("\",")
+                        .append("\"precio\":").append(precioVenta).append(",")
+                        .append("\"stock\":").append(cantidadStock)
+                        .append("}");
+                    first = false;
+                }
+                json.append("]");
+                out.print(json.toString());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            out.print("[]");
+            System.out.println("Error al cargar productos en doGet: " + e.getMessage());
+        }
+    }
+
+    // 2. REGISTRAR LA VENTA Y DESCONTAR STOCK EN LOTE
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        response.setContentType("text/plain;charset=UTF-8");
+        PrintWriter out = response.getWriter();
+
         String totalStr = request.getParameter("total");
         String metodoPago = request.getParameter("metodoPago");
-        
-        // 2. Recibir los arreglos con los detalles del carrito
-        String[] productos = request.getParameterValues("productos");
+        String[] productos = request.getParameterValues("productos"); // Nombres o IDs
         String[] cantidades = request.getParameterValues("cantidades");
         String[] precios = request.getParameterValues("precios");
         String[] subtotales = request.getParameterValues("subtotales");
 
         if (totalStr == null || productos == null) {
-            out.print("Error: Datos del carrito incompletos");
+            out.print("error: Datos incompletos");
             return;
         }
 
         double total = Double.parseDouble(totalStr);
+        int idPago = 1; // Por defecto Efectivo
+        if ("Mercado Pago".equalsIgnoreCase(metodoPago)) {
+            idPago = 2;
+        }
+        int idEmpleado = 1;
         Connection conn = null;
         PreparedStatement psVenta = null;
         PreparedStatement psDetalle = null;
         PreparedStatement psStock = null;
-        ResultSet rsClave = null;
 
         try {
-            // Configura tu conexión a Oracle 11g
             Class.forName("oracle.jdbc.OracleDriver");
-            conn = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:XE", "soft", "soft");
+            conn = DriverManager.getConnection(url, user, pass);
             
-            // Desactivar autocommit para proteger la transacción (Venta + Detalles + Stock)
+            // --- NUEVO CANDADO DE SEGURIDAD: VERIFICAR CAJA ABIERTA ---
+            String sqlCaja = "SELECT id_caja FROM Caja WHERE id_estado = 1 AND TRUNC(fecha) = TRUNC(SYSDATE)";
+            try (Statement stCaja = conn.createStatement();
+                 ResultSet rsCaja = stCaja.executeQuery(sqlCaja)) {
+                if (!rsCaja.next()) {
+                    out.print("error: Operación denegada. No se puede cobrar porque la caja está cerrada.");
+                    return; // Detenemos la ejecución aquí
+                }
+            }
             conn.setAutoCommit(false); 
 
-            // Insertar Venta principal con secuencia de Oracle
-            String sqlVenta = "INSERT INTO tabla_ventas (id_venta, total, metodo_pago, fecha) VALUES (SEQ_VENTAS.NEXTVAL, ?, ?, SYSDATE)";
-            String[] returnId = { "ID_VENTA" };
-            psVenta = conn.prepareStatement(sqlVenta, returnId);
-            psVenta.setDouble(1, total);
-            psVenta.setString(2, metodoPago);
+            // 1. Insertar Venta (Asegúrate de tener creada la secuencia SEQ_VENTAS y la tabla VENTAS)
+            String sqlVenta = "INSERT INTO Ventas (id_venta, id_pago, id_empleado, fecha, total) " +
+                    "VALUES (SEQ_VENTAS.NEXTVAL, ?, ?, SYSDATE, ?)";
+            psVenta = conn.prepareStatement(sqlVenta);
+            psVenta.setInt(1, idPago);
+            psVenta.setInt(2, idEmpleado);
+            psVenta.setDouble(3, total);
             psVenta.executeUpdate();
 
-            int idVenta = 0;
-            rsClave = psVenta.getGeneratedKeys();
-            if (rsClave.next()) {
-                idVenta = rsClave.getInt(1); // Obtener el ID de la venta recién insertada
-            }
-
-            // Preparar consultas para insertar el detalle y descontar el inventario
-            String sqlDetalle = "INSERT INTO tabla_detalle_venta (id_detalle, id_venta, producto, cantidad, precio, subtotal) VALUES (SEQ_DETALLE_VENTA.NEXTVAL, ?, ?, ?, ?, ?)";
-            String sqlStock = "UPDATE tabla_inventario SET stock = stock - ? WHERE nombre_producto = ?";
+            // 2. Preparar consultas para Detalle y Stock
+            // Usamos SEQ_VENTAS.CURRVAL para enlazar el detalle con la venta recién creada
+            String sqlDetalle = "INSERT INTO Detalles_venta (id_producto, id_venta, precio_unitario, subtotal, cantidad) " +
+                    "VALUES ((SELECT id_producto FROM Productos WHERE nombre = ?), SEQ_VENTAS.CURRVAL, ?, ?, ?)";
+            
+            // Descontamos de la tabla real 'Productos'
+            String sqlStock = "UPDATE Productos SET cantidad = cantidad - ? WHERE nombre = ?";
             
             psDetalle = conn.prepareStatement(sqlDetalle);
             psStock = conn.prepareStatement(sqlStock);
 
-            // Recorrer los arreglos recibidos desde HTML e insertarlos
             for (int i = 0; i < productos.length; i++) {
                 String prod = productos[i];
-                int cant = Integer.parseInt(cantidades[i]);
                 double prec = Double.parseDouble(precios[i]);
                 double sub = Double.parseDouble(subtotales[i]);
+                int cant = Integer.parseInt(cantidades[i]);
 
-                // Agregar al lote del Detalle
-                psDetalle.setInt(1, idVenta);
-                psDetalle.setString(2, prod);
-                psDetalle.setInt(3, cant);
-                psDetalle.setDouble(4, prec);
-                psDetalle.setDouble(5, sub);
+                // Batch para Detalles_venta
+                psDetalle.setString(1, prod);
+                psDetalle.setDouble(2, prec);
+                psDetalle.setDouble(3, sub);
+                psDetalle.setInt(4, cant);
                 psDetalle.addBatch();
 
-                // Agregar al lote del Stock
+                // Batch para Stock
                 psStock.setInt(1, cant);
                 psStock.setString(2, prod);
                 psStock.addBatch();
             }
 
-            // Ejecutar las sentencias por lote
             psDetalle.executeBatch();
             psStock.executeBatch();
+            
+            StringBuilder alertas = new StringBuilder();
+            String sqlCheck = "SELECT nombre FROM Productos WHERE nombre = ? AND cantidad <= stock_minimo";
+            try (PreparedStatement psCheck = conn.prepareStatement(sqlCheck)) {
+                for (String prod : productos) {
+                    psCheck.setString(1, prod);
+                    try (ResultSet rs = psCheck.executeQuery()) {
+                        if (rs.next()) {
+                            if (alertas.length() > 0) alertas.append(",");
+                            alertas.append(rs.getString("NOMBRE"));
+                        }
+                    }
+                }
+            }
 
-            conn.commit(); // Confirmar la transacción
-            out.print("Venta registrada en la base de datos con éxito.");
+            conn.commit(); 
+            if (alertas.length() > 0) {
+                out.print("ok|" + alertas.toString());
+            } else {
+                out.print("ok");
+            }
 
-        } catch (Exception e) {
+        }
+        
+        
+        catch (Exception e) {
             try { if (conn != null) conn.rollback(); } catch (SQLException ex) { }
-            out.print("Error al registrar venta: " + e.getMessage());
+            out.print("error: " + e.getMessage());
             e.printStackTrace();
         } finally {
             try {
-                if (rsClave != null) rsClave.close();
                 if (psVenta != null) psVenta.close();
                 if (psDetalle != null) psDetalle.close();
                 if (psStock != null) psStock.close();
